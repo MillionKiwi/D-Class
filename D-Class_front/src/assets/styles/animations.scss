@@ -1,0 +1,303 @@
+/**
+ * 애니메이션 정의
+ * UI 설계 명세서 v2.0 기반
+ */
+
+// ============================================
+// Keyframes
+// ============================================
+
+// 페이드 인
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// 페이드 아웃
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+// 슬라이드 업
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// 슬라이드 다운
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// 슬라이드 인 (좌측에서 우측으로)
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+// 슬라이드 인 (우측에서 좌측으로)
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+// 스케일 업
+@keyframes scaleUp {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// 스피너 회전
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 펄스 효과
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// 바운스
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// 쉐이크 (에러 표시)
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+// ============================================
+// Animation Classes
+// ============================================
+
+// 페이드 인
+.fade-in {
+  animation: fadeIn 200ms ease-out;
+}
+
+.fade-out {
+  animation: fadeOut 200ms ease-out;
+}
+
+// 슬라이드 애니메이션
+.slide-up {
+  animation: slideUp 250ms ease-out;
+}
+
+.slide-down {
+  animation: slideDown 250ms ease-out;
+}
+
+.slide-in-left {
+  animation: slideInLeft 300ms ease-out;
+}
+
+.slide-in-right {
+  animation: slideInRight 300ms ease-out;
+}
+
+// 스케일
+.scale-up {
+  animation: scaleUp 250ms ease-out;
+}
+
+// 로딩 스피너
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+// 펄스 (스켈레톤 로딩)
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+// 바운스
+.bounce {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+// 쉐이크 (에러)
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+// ============================================
+// Transition Classes
+// ============================================
+
+// 페이지 전환
+.page-enter-active {
+  animation: slideInRight 300ms ease-out;
+}
+
+.page-leave-active {
+  animation: fadeOut 300ms ease-out;
+}
+
+// 모달 전환
+.modal-enter-active {
+  animation: scaleUp 250ms ease-out;
+}
+
+.modal-leave-active {
+  animation: fadeOut 250ms ease-out;
+}
+
+// 바텀시트 전환
+.bottom-sheet-enter-active {
+  animation: slideUp 250ms ease-out;
+}
+
+.bottom-sheet-leave-active {
+  animation: slideDown 250ms ease-out;
+}
+
+// 토스트 전환
+.toast-enter-active {
+  animation: slideUp 200ms ease-out;
+}
+
+.toast-leave-active {
+  animation: fadeOut 200ms ease-out;
+}
+
+// 리스트 아이템 전환
+.list-enter-active {
+  animation: fadeIn 200ms ease-out;
+}
+
+.list-leave-active {
+  position: absolute;
+  animation: fadeOut 200ms ease-out;
+}
+
+.list-move {
+  transition: transform 300ms ease;
+}
+
+// ============================================
+// Hover Effects
+// ============================================
+
+.hover-scale {
+  transition: transform 150ms ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.hover-brightness {
+  transition: filter 150ms ease;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
+
+.hover-shadow {
+  transition: box-shadow 150ms ease;
+
+  &:hover {
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// ============================================
+// Skeleton Loading
+// ============================================
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 25%,
+    rgba(0, 0, 0, 0.12) 50%,
+    rgba(0, 0, 0, 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+

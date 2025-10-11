@@ -1,0 +1,257 @@
+/**
+ * D-Class 디자인 시스템 변수
+ * UI 설계 명세서 v2.0 기반
+ */
+
+// ============================================
+// 색상 팔레트 (Color Palette)
+// ============================================
+
+// Primary Color (메인 색상)
+$color-primary: #a7c7e7; // Serene Blue
+$color-primary-light: lighten($color-primary, 10%);
+$color-primary-dark: darken($color-primary, 10%);
+
+// Accent Color (포인트 색상)
+$color-accent: #fab4b4; // Soft Coral
+$color-accent-light: lighten($color-accent, 10%);
+$color-accent-dark: darken($color-accent, 10%);
+
+// Neutral Colors (중립 색상)
+$color-background: #f9f9f9; // 기본 배경
+$color-card-bg: #ffffff; // 카드 배경
+$color-text-primary: #5d6d7e; // 기본 텍스트
+$color-text-secondary: #aeb6bf; // 보조 텍스트
+$color-divider: #eaeaea; // 구분선
+$color-disabled: #d5dbdb; // 비활성 상태
+
+// Semantic Colors (의미별 색상)
+$color-success: #b2d8d8; // 성공, 인증 (파스텔 민트)
+$color-warning: #ffe5a9; // 주의, 대기 (파스텔 옐로우)
+$color-error: #ffb6c1; // 오류, 반려 (파스텔 핑크)
+$color-info: #d4e5f7; // 정보 (연한 블루)
+
+// White & Black
+$color-white: #ffffff;
+$color-black: #000000;
+
+// ============================================
+// 타이포그래피 (Typography)
+// ============================================
+
+// Font Family
+$font-family-primary: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+  'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic',
+  'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+
+// Font Sizes
+$font-size-h1: 22px;
+$font-size-h2: 18px;
+$font-size-h3: 16px;
+$font-size-body: 16px;
+$font-size-body-small: 14px;
+$font-size-caption: 12px;
+
+// Font Weights
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Line Heights
+$line-height-tight: 1.4;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.6;
+
+// ============================================
+// 간격 시스템 (Spacing)
+// ============================================
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+$spacing-xl: 24px;
+$spacing-2xl: 32px;
+$spacing-3xl: 48px;
+
+// ============================================
+// Border Radius
+// ============================================
+
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-full: 9999px;
+
+// ============================================
+// Shadows
+// ============================================
+
+$shadow-card: 0px 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-modal: 0px 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-button: 0px 2px 4px rgba(0, 0, 0, 0.1);
+
+// ============================================
+// Z-Index
+// ============================================
+
+$z-index-dropdown: 100;
+$z-index-sticky: 200;
+$z-index-fixed: 300;
+$z-index-modal-backdrop: 400;
+$z-index-modal: 500;
+$z-index-toast: 600;
+$z-index-tooltip: 700;
+
+// ============================================
+// Breakpoints (반응형)
+// ============================================
+
+$breakpoint-mobile: 767px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+$breakpoint-wide: 1440px;
+
+// ============================================
+// Transitions
+// ============================================
+
+$transition-fast: 150ms ease-in-out;
+$transition-base: 250ms ease-in-out;
+$transition-slow: 300ms ease-in-out;
+
+// ============================================
+// Component Sizes
+// ============================================
+
+// Button
+$button-height: 48px;
+$button-padding-x: $spacing-lg;
+$button-padding-y: $spacing-md;
+
+// Input
+$input-height: 48px;
+$input-padding-x: $spacing-lg;
+$input-border-width: 1px;
+$input-focus-border-width: 2px;
+
+// Card
+$card-padding: $spacing-lg;
+$card-gap: $spacing-md;
+
+// Navigation
+$nav-height: 56px;
+$header-height: 60px;
+
+// Icon Sizes
+$icon-sm: 16px;
+$icon-md: 20px;
+$icon-lg: 24px;
+
+// ============================================
+// Mixins
+// ============================================
+
+// 반응형 미디어 쿼리
+@mixin mobile {
+  @media (max-width: $breakpoint-mobile) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $breakpoint-tablet) and (max-width: #{$breakpoint-desktop - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+@mixin wide {
+  @media (min-width: $breakpoint-wide) {
+    @content;
+  }
+}
+
+// Flexbox 중앙 정렬
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// 텍스트 말줄임
+@mixin text-ellipsis($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// 스크롤바 스타일링
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $color-background;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-disabled;
+    border-radius: $radius-full;
+
+    &:hover {
+      background: $color-text-secondary;
+    }
+  }
+}
+
+// 터치 영역 최소 크기 보장 (접근성)
+@mixin touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+// 포커스 스타일 (접근성)
+@mixin focus-ring {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}
+
+// 카드 스타일
+@mixin card-style {
+  background-color: $color-card-bg;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $card-padding;
+}
+
+// 버튼 비활성화 스타일
+@mixin button-disabled {
+  background-color: $color-disabled;
+  color: $color-text-secondary;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
