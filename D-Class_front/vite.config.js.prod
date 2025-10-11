@@ -1,0 +1,50 @@
+import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  // 프로덕션 빌드 최적화
+  build: {
+    target: 'es2015',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // console.log 제거
+        drop_debugger: true, // debugger 제거
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // 벤더 코드 분리
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'ui-vendor': ['lucide-vue-next'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+    sourcemap: false, // 프로덕션에서는 소스맵 제외
+  },
+  // CSS 최적화
+  css: {
+    devSourcemap: false,
+  },
+  // 서버 설정
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
+})
+
