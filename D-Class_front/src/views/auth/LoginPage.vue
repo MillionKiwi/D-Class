@@ -111,7 +111,7 @@ const handleLogin = async () => {
 
   if (result.success) {
     // redirect 쿼리가 있으면 해당 경로로, 없으면 역할별 홈으로
-    const redirectPath = route.query.redirect || authStore.getRedirectPath(authStore.userRole)
+    const redirectPath = route.query.redirect || result.redirectPath
     router.push(redirectPath)
   }
 }

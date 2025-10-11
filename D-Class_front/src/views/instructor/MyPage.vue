@@ -170,6 +170,7 @@ const verificationBadgeText = computed(() => {
 const handleLogout = async () => {
   if (confirm('로그아웃하시겠습니까?')) {
     await authStore.logout()
+    router.push('/login')
   }
 }
 

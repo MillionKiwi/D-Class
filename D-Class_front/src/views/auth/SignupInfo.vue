@@ -415,8 +415,12 @@ const handleSubmit = async () => {
     ...(isInstructor.value ? { genres: formData.genres } : { address: formData.address }),
   }
 
-  await authStore.signup(signupData)
+  const result = await authStore.signup(signupData)
   isLoading.value = false
+
+  if (result.success && result.shouldRedirect) {
+    router.push(result.shouldRedirect)
+  }
 }
 
 // 역할이 없으면 선택 페이지로 리다이렉트

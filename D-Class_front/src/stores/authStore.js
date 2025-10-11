@@ -4,14 +4,12 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { apiClient } from '@/api'
 import { USER_ROLES, STORAGE_KEYS } from '@/utils/constants'
 import { storage } from '@/utils/helpers'
 import { useToast } from '@/composables/useToast'
 
 export const useAuthStore = defineStore('auth', () => {
-  const router = useRouter()
   const { success, error: showError } = useToast()
 
   // State
@@ -52,11 +50,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       success('로그인되었습니다.')
 
-      // 역할에 따라 리다이렉트
-      const redirectPath = getRedirectPath(userData.role)
-      router.push(redirectPath)
-
-      return { success: true }
+      return { success: true, redirectPath: getRedirectPath(userData.role) }
     } catch (err) {
       showError(err.response?.data?.message || '로그인에 실패했습니다.')
       return { success: false, error: err }
@@ -73,8 +67,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await apiClient.post('/auth/signup', signupData)
       success('회원가입이 완료되었습니다. 로그인해주세요.')
-      router.push('/login')
-      return { success: true }
+      return { success: true, shouldRedirect: '/login' }
     } catch (err) {
       showError(err.response?.data?.message || '회원가입에 실패했습니다.')
       return { success: false, error: err }
@@ -103,7 +96,6 @@ export const useAuthStore = defineStore('auth', () => {
       storage.remove(STORAGE_KEYS.REFRESH_TOKEN)
 
       success('로그아웃되었습니다.')
-      router.push('/login')
     }
   }
 
