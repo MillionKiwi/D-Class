@@ -10,4 +10,6 @@ export { default as BaseModal } from './BaseModal.vue'
 export { default as BaseToast } from './BaseToast.vue'
 export { default as BaseLoading } from './BaseLoading.vue'
 export { default as BaseEmptyState } from './BaseEmptyState.vue'
+export { default as BaseImageUpload } from './BaseImageUpload.vue'
+export { default as JobCard } from './JobCard.vue'
 
