@@ -426,3 +426,119 @@ img {
   }
 }
 
+// ============================================
+// 반응형 디자인
+// ============================================
+
+// 모바일 기본 (Mobile First: ~767px)
+// - 기본 스타일이 모바일을 위한 것
+
+// 태블릿 (768px ~ 1023px)
+@media (min-width: 768px) {
+  html {
+    font-size: 17px;
+  }
+
+  .container {
+    max-width: 768px;
+    padding: 0 $spacing-xl;
+  }
+
+  .content {
+    padding: $spacing-xl;
+  }
+}
+
+// 데스크톱 (1024px ~)
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px;
+  }
+
+  .container {
+    max-width: 1200px;
+    padding: 0 $spacing-2xl;
+  }
+
+  .content {
+    padding: $spacing-2xl;
+  }
+
+  // 관리자 사이드바 레이아웃
+  .admin-layout {
+    .side-navigation {
+      width: 240px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .main-content {
+      margin-left: 240px;
+    }
+  }
+
+  // 하단 네비게이션 숨김
+  .bottom-navigation {
+    display: none;
+  }
+}
+
+// 큰 데스크톱 (1440px ~)
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+}
+
+// ============================================
+// 반응형 유틸리티 클래스
+// ============================================
+
+// 모바일에서만 보이기
+.mobile-only {
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+}
+
+// 태블릿에서만 보이기
+.tablet-only {
+  display: none !important;
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    display: block !important;
+  }
+}
+
+// 데스크톱에서만 보이기
+.desktop-only {
+  display: none !important;
+
+  @media (min-width: 1024px) {
+    display: block !important;
+  }
+}
+
+// 모바일에서 숨기기
+.hide-mobile {
+  @media (max-width: 767px) {
+    display: none !important;
+  }
+}
+
+// 태블릿에서 숨기기
+.hide-tablet {
+  @media (min-width: 768px) and (max-width: 1023px) {
+    display: none !important;
+  }
+}
+
+// 데스크톱에서 숨기기
+.hide-desktop {
+  @media (min-width: 1024px) {
+    display: none !important;
+  }
+}
+
