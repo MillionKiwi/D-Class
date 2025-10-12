@@ -166,6 +166,29 @@ VITE_LOG_API=true
 - **기본 크기**: 16px
 - **줄 높이**: 1.6
 
+## 🎭 Mock API 테스트
+
+백엔드 API 연결 전에 Mock API로 프론트엔드를 테스트할 수 있습니다!
+
+### 빠른 시작
+
+```bash
+# 개발 서버 실행 (Mock API 자동 활성화)
+npm run dev
+```
+
+### 테스트 계정
+
+```
+강사1: instructor1@test.com / password123
+강사2: instructor2@test.com / password123
+학원1: academy1@test.com / password123
+학원2: academy2@test.com / password123
+관리자: admin@d-class.com / admin123!@#
+```
+
+> 📚 **상세 가이드**: Mock API 사용법과 테스트 시나리오는 [MOCK_API_GUIDE.md](./MOCK_API_GUIDE.md)를 참고하세요.
+
 ## 📄 라이선스
 
 이 프로젝트는 MIT 라이선스를 따릅니다.
