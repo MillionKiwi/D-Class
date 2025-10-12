@@ -22,8 +22,21 @@
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
     
-    <!-- Service Worker 등록 -->
+    <!-- Service Worker 등록 (개발 중에는 주석 처리 권장) -->
     <script>
+      // 개발 중에는 Service Worker가 캐시 문제를 일으킬 수 있으므로
+      // 기존 Service Worker를 모두 제거합니다
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => {
+            registration.unregister()
+            console.log('🔄 SW unregistered:', registration.scope)
+          })
+        })
+      }
+      
+      // Service Worker 등록 (개발 완료 후 주석 해제)
+      /*
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
@@ -35,6 +48,7 @@
             })
         })
       }
+      */
     </script>
   </body>
 </html>
