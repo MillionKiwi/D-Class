@@ -4,10 +4,13 @@
 
 export { default as apiClient } from './axios'
 
-// 향후 각 도메인별 API 모듈을 여기에 export
-// export * from './auth'
-// export * from './jobs'
-// export * from './applications'
-// export * from './users'
-// export * from './reviews'
+// 도메인별 API 모듈
+export * as authAPI from './modules/auth'
+export * as jobsAPI from './modules/jobs'
+export * as applicationsAPI from './modules/applications'
+export * as profileAPI from './modules/profile'
+export * as verificationAPI from './modules/verification'
+export * as notificationsAPI from './modules/notifications'
+export * as reviewsAPI from './modules/reviews'
+export * as adminAPI from './modules/admin'
 
