@@ -1,6 +1,9 @@
 /**
  * 상수 정의
+ * 환경변수와 함께 사용되는 애플리케이션 상수들
  */
+
+import env from './env'
 
 // 사용자 역할
 export const USER_ROLES = {
@@ -160,24 +163,33 @@ export const WEEKDAYS = [
   { value: 'sun', label: '일' },
 ]
 
-// 파일 업로드 제한
+// 파일 업로드 제한 (환경변수에서 가져옴)
 export const FILE_UPLOAD = {
-  MAX_SIZE: 10 * 1024 * 1024, // 10MB
-  ALLOWED_TYPES: ['image/jpeg', 'image/png', 'application/pdf'],
+  MAX_SIZE: env.upload.maxFileSize, // 10MB (환경변수)
+  ALLOWED_TYPES: env.upload.allowedFileTypes, // 환경변수
   ALLOWED_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.pdf'],
+  MAX_IMAGE_WIDTH: env.upload.maxImageWidth, // 환경변수
+  MAX_IMAGE_HEIGHT: env.upload.maxImageHeight, // 환경변수
 }
 
-// 페이지네이션
+// 페이지네이션 (환경변수에서 가져옴)
 export const PAGINATION = {
-  DEFAULT_PAGE_SIZE: 20,
-  ADMIN_PAGE_SIZE: 30,
+  DEFAULT_PAGE_SIZE: env.features.itemsPerPage, // 환경변수 (무한 스크롤)
+  ADMIN_PAGE_SIZE: env.features.paginationSize, // 환경변수 (관리자 페이지)
 }
 
-// 로컬 스토리지 키
+// 로컬 스토리지 키 (환경변수에서 가져옴)
 export const STORAGE_KEYS = {
-  ACCESS_TOKEN: 'accessToken',
-  REFRESH_TOKEN: 'refreshToken',
+  ACCESS_TOKEN: env.auth.tokenKey, // 환경변수
+  REFRESH_TOKEN: env.auth.refreshTokenKey, // 환경변수
   USER_INFO: 'userInfo',
   USER_ROLE: 'userRole',
+}
+
+// 기타 설정 (환경변수에서 가져옴)
+export const CONFIG = {
+  SEARCH_DEBOUNCE: env.features.searchDebounce, // 검색 디바운스 (500ms)
+  TOAST_DURATION: env.features.toastDuration, // 토스트 표시 시간 (3000ms)
+  CACHE_DURATION: env.features.cacheDuration, // API 캐시 시간 (5분)
 }
 
