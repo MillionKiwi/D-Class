@@ -10,6 +10,9 @@ import './assets/styles/global.scss'
 // 환경변수 검증
 import { validateEnv } from './utils/env'
 
+// MSW 초기화
+import { startMSW } from './mocks/browser'
+
 // 앱 시작 전 환경변수 검증
 try {
   validateEnv()
@@ -21,9 +24,19 @@ try {
   }
 }
 
-const app = createApp(App)
+// MSW 시작 후 앱 초기화
+async function initApp() {
+  // 개발 환경에서 MSW 시작
+  if (import.meta.env.DEV) {
+    await startMSW()
+  }
 
-app.use(createPinia())
-app.use(router)
+  const app = createApp(App)
 
-app.mount('#app')
+  app.use(createPinia())
+  app.use(router)
+
+  app.mount('#app')
+}
+
+initApp()
