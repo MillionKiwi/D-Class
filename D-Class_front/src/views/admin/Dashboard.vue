@@ -88,7 +88,7 @@
             </div>
             <div class="activity-content">
               <p class="activity-text">{{ activity.text }}</p>
-              <p class="activity-time">{{ formatTimeAgo(activity.createdAt) }}</p>
+              <p class="activity-time">{{ formatRelativeTime(activity.createdAt) }}</p>
             </div>
           </div>
         </div>
@@ -139,7 +139,7 @@ import {
 } from 'lucide-vue-next'
 import { AdminLayout } from '@/components/layout'
 import { BaseCard, BaseButton, BaseEmptyState } from '@/components/common'
-import { formatTimeAgo } from '@/utils/helpers'
+import { formatRelativeTime } from '@/utils/helpers'
 import { apiClient } from '@/api'
 
 const router = useRouter()

@@ -107,7 +107,8 @@ import { AcademyLayout } from '@/components/layout'
 import { BaseButton } from '@/components/common'
 import { useProfileStore } from '@/stores'
 import { FILE_UPLOAD } from '@/utils/constants'
-import { validateFileSize, validateFileType, formatFileSize } from '@/utils/helpers'
+import { formatFileSize } from '@/utils/helpers'
+import { validateFileSize, validateFileType } from '@/utils/validators'
 import { useToast } from '@/composables/useToast'
 
 const profileStore = useProfileStore()
