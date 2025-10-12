@@ -44,12 +44,16 @@ src/
 # 의존성 설치
 npm install
 
-# 환경 변수 설정
-cp .env.example .env.development
+# 환경 변수 파일 확인 (이미 생성되어 있습니다)
+# .env.development - 개발 환경
+# .env.production - 프로덕션 환경
+# 필요시 각 파일의 값을 수정하세요
 
 # 개발 서버 실행
 npm run dev
 ```
+
+> 📝 **환경변수 설정**: 자세한 내용은 [ENV_GUIDE.md](./ENV_GUIDE.md)를 참고하세요.
 
 ### 빌드
 
@@ -109,7 +113,13 @@ npm run deploy:prod
 
 ## 🔧 환경 변수
 
-`.env.development` 또는 `.env.production` 파일을 생성하고 다음 변수를 설정하세요:
+환경변수 파일은 이미 생성되어 있습니다:
+
+- `.env.example` - 예제 파일 (Git에 포함)
+- `.env.development` - 개발 환경 설정
+- `.env.production` - 프로덕션 환경 설정
+
+### 주요 환경변수
 
 ```env
 # API 설정
@@ -121,9 +131,16 @@ VITE_APP_ENV=development
 VITE_APP_NAME=D-Class
 VITE_APP_VERSION=1.0.0
 
-# 업로드 설정
-VITE_MAX_FILE_SIZE=5242880
+# 파일 업로드 설정 (10MB)
+VITE_MAX_FILE_SIZE=10485760
+VITE_ALLOWED_FILE_TYPES=image/jpeg,image/png,application/pdf
+
+# 디버그 설정
+VITE_DEBUG_MODE=true
+VITE_LOG_API=true
 ```
+
+> 📚 **상세 가이드**: 전체 환경변수 목록과 사용법은 [ENV_GUIDE.md](./ENV_GUIDE.md)를 참고하세요.
 
 ## 📱 PWA
 
