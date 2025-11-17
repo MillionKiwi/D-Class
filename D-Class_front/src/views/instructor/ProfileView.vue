@@ -51,6 +51,11 @@
 
         <div class="menu-section card">
           <h3 class="section-title">설정</h3>
+          <router-link to="/notifications" class="menu-item">
+            <span>알림</span>
+            <Badge v-if="unreadCount > 0" variant="error" small>{{ unreadCount }}</Badge>
+            <span>→</span>
+          </router-link>
           <router-link to="/settings/notifications" class="menu-item">
             <span>알림 설정</span>
             <span>→</span>
@@ -77,6 +82,7 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notification'
 import { inject } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
@@ -86,10 +92,12 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
 const showToast = inject('toast')
 
 const user = computed(() => authStore.user)
 const loading = computed(() => authStore.loading)
+const unreadCount = computed(() => notificationStore.unreadCount)
 
 const getVerificationLabel = (status) => {
   const labels = {
@@ -121,6 +129,8 @@ onMounted(async () => {
   if (!user.value) {
     await authStore.fetchCurrentUser()
   }
+  // 알림 카운트 로드
+  await notificationStore.fetchNotifications({ page_size: 1 })
 })
 </script>
 

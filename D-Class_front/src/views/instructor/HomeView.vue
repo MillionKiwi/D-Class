@@ -1,5 +1,5 @@
 <template>
-  <AppLayout show-search @search="handleSearch">
+  <AppLayout show-search :unread-count="unreadCount" @search="handleSearch">
     <div class="home-page page-container">
       <!-- 필터 영역 -->
       <div class="filters-section">
@@ -103,12 +103,16 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobPostingStore } from '@/stores/jobPosting'
+import { useNotificationStore } from '@/stores/notification'
 import { inject } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'
 import Badge from '@/components/common/Badge.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+
+const notificationStore = useNotificationStore()
+const unreadCount = computed(() => notificationStore.unreadCount)
 
 const router = useRouter()
 const jobPostingStore = useJobPostingStore()
@@ -202,7 +206,7 @@ const resetFilters = () => {
 }
 
 const handleSearch = () => {
-  router.push('/search')
+  router.push({ name: 'Search' })
 }
 
 const getRegionLabel = (value) => {
@@ -234,8 +238,10 @@ watch([filters, ordering], () => {
   fetchPostings()
 })
 
-onMounted(() => {
-  fetchPostings()
+onMounted(async () => {
+  await fetchPostings()
+  // 알림 카운트 로드
+  await notificationStore.fetchNotifications({ page_size: 1 })
 })
 </script>
 

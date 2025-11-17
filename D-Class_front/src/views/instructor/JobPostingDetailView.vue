@@ -142,7 +142,10 @@ const confirmApply = async () => {
 
 const viewAcademyProfile = () => {
   if (posting.value?.academy?.id) {
-    router.push(`/academies/${posting.value.academy.id}`)
+    router.push({
+      name: 'AcademyProfile',
+      params: { id: posting.value.academy.id },
+    })
   }
 }
 

@@ -41,15 +41,15 @@
         </router-link>
       </div>
 
-      <div class="menu-section card">
-        <h3 class="section-title">인증 관리</h3>
-        <router-link to="/verification/academy" class="menu-item">
-          <span>사업자 인증</span>
-          <Badge :variant="getVerificationBadgeVariant(user?.verification_status)">
-            {{ getVerificationLabel(user?.verification_status) }}
-          </Badge>
-        </router-link>
-      </div>
+        <div class="menu-section card">
+          <h3 class="section-title">인증 관리</h3>
+          <router-link to="/academy/verification" class="menu-item">
+            <span>사업자 인증</span>
+            <Badge :variant="getVerificationBadgeVariant(user?.verification_status)">
+              {{ getVerificationLabel(user?.verification_status) }}
+            </Badge>
+          </router-link>
+        </div>
 
       <div class="menu-section card">
         <h3 class="section-title">설정</h3>

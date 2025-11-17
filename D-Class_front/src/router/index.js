@@ -69,6 +69,60 @@ const router = createRouter({
       component: () => import('@/views/instructor/ProfileEditView.vue'),
       meta: { requiresAuth: true, role: ['instructor'] },
     },
+    {
+      path: '/reviews/write/:applicationId',
+      name: 'ReviewWrite',
+      component: () => import('@/views/instructor/ReviewWriteView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/reviews/edit/:id',
+      name: 'ReviewEdit',
+      component: () => import('@/views/instructor/ReviewWriteView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/reviews/my',
+      name: 'MyReviews',
+      component: () => import('@/views/instructor/MyReviewsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/reviews/:targetType/:targetId',
+      name: 'ReviewList',
+      component: () => import('@/views/instructor/ReviewListView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/verification',
+      name: 'Verification',
+      component: () => import('@/views/instructor/VerificationView.vue'),
+      meta: { requiresAuth: true, role: ['instructor'] },
+    },
+    {
+      path: '/notifications',
+      name: 'Notifications',
+      component: () => import('@/views/instructor/NotificationView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/settings/notifications',
+      name: 'NotificationSettings',
+      component: () => import('@/views/instructor/NotificationSettingsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/search',
+      name: 'Search',
+      component: () => import('@/views/instructor/SearchView.vue'),
+      meta: { requiresAuth: false, hideNav: true },
+    },
+    {
+      path: '/academies/:id',
+      name: 'AcademyProfile',
+      component: () => import('@/views/instructor/AcademyProfileView.vue'),
+      meta: { requiresAuth: false },
+    },
     // 학원 회원
     {
       path: '/academy/postings',
@@ -111,6 +165,55 @@ const router = createRouter({
       name: 'AcademyProfileEdit',
       component: () => import('@/views/academy/AcademyProfileEditView.vue'),
       meta: { requiresAuth: true, role: ['academy'] },
+    },
+    {
+      path: '/academy/verification',
+      name: 'AcademyVerification',
+      component: () => import('@/views/academy/VerificationView.vue'),
+      meta: { requiresAuth: true, role: ['academy'] },
+    },
+    {
+      path: '/academy/reviews',
+      name: 'AcademyReviews',
+      component: () => import('@/views/academy/ReviewsView.vue'),
+      meta: { requiresAuth: true, role: ['academy'] },
+    },
+    {
+      path: '/academy/hired',
+      name: 'AcademyHired',
+      component: () => import('@/views/academy/HiredView.vue'),
+      meta: { requiresAuth: true, role: ['academy'] },
+    },
+    // 공통 페이지
+    {
+      path: '/terms/service',
+      name: 'TermsService',
+      component: () => import('@/views/common/TermsView.vue'),
+      meta: { requiresAuth: false, hideNav: true, termType: 'service' },
+    },
+    {
+      path: '/terms/privacy',
+      name: 'TermsPrivacy',
+      component: () => import('@/views/common/TermsView.vue'),
+      meta: { requiresAuth: false, hideNav: true, termType: 'privacy' },
+    },
+    {
+      path: '/faq',
+      name: 'FAQ',
+      component: () => import('@/views/common/FAQView.vue'),
+      meta: { requiresAuth: false, hideNav: true },
+    },
+    {
+      path: '/support',
+      name: 'Support',
+      component: () => import('@/views/common/SupportView.vue'),
+      meta: { requiresAuth: true, hideNav: true },
+    },
+    {
+      path: '/settings/account',
+      name: 'AccountSettings',
+      component: () => import('@/views/common/AccountSettingsView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/404',

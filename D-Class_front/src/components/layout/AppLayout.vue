@@ -4,9 +4,9 @@
       v-if="!hideNav"
       :show-search="showSearch"
       :show-add-posting="showAddPosting"
-      :unread-count="unreadCount"
-      @search="$emit('search')"
-      @notification="$emit('notification')"
+      :unread-count="unreadCountComputed"
+      @search="handleSearch"
+      @notification="handleNotification"
     />
     <main class="app-main" :class="{ 'no-header': hideNav }">
       <slot></slot>
@@ -17,7 +17,9 @@
 </template>
 
 <script setup>
-import { ref, provide } from 'vue'
+import { ref, provide, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useNotificationStore } from '@/stores/notification'
 import AppHeader from './AppHeader.vue'
 import BottomNavigation from './BottomNavigation.vue'
 import Toast from '@/components/common/Toast.vue'
@@ -41,6 +43,16 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
+const notificationStore = useNotificationStore()
+
+const unreadCountComputed = computed(() => {
+  if (props.unreadCount > 0) {
+    return props.unreadCount
+  }
+  return notificationStore.unreadCount
+})
+
 defineEmits(['search', 'notification'])
 
 const toastRef = ref(null)
@@ -52,6 +64,14 @@ const showToast = (message, type = 'info', duration = 3000) => {
     toastRef.value.type = type
     toastRef.value.show()
   }
+}
+
+const handleSearch = () => {
+  router.push({ name: 'Search' })
+}
+
+const handleNotification = () => {
+  router.push({ name: 'Notifications' })
 }
 
 provide('toast', showToast)

@@ -103,7 +103,7 @@ const viewApplication = (application) => {
 const writeReview = (application) => {
   router.push({
     name: 'ReviewWrite',
-    params: { applicationId: application.id },
+    params: { applicationId: application.id.toString() },
   })
 }
 
