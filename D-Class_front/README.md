@@ -1,44 +1,125 @@
-# D-Class_front
+# D-Class Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+D-Class (디클래스) 프론트엔드 프로젝트입니다.
 
-## Recommended IDE Setup
+## 기술 스택
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Vue.js 3** (Composition API)
+- **Pinia** (상태 관리)
+- **Vue Router** (라우팅)
+- **Vite** (빌드 도구)
+- **Vite PWA Plugin** (PWA 지원)
+- **Axios** (HTTP 클라이언트)
 
-## Recommended Browser Setup
+## PWA 지원
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+이 프로젝트는 **PWA (Progressive Web App)**로 구성되어 있습니다:
 
-## Customize configuration
+- 📱 **오프라인 지원**: Service Worker를 통한 오프라인 캐싱
+- 📲 **앱처럼 설치**: 홈 화면에 추가 가능
+- 🔄 **자동 업데이트**: 새 버전 자동 감지 및 업데이트
+- ⚡ **빠른 로딩**: 캐시된 리소스로 빠른 초기 로딩
+- 🔒 **HTTPS 필수**: 보안을 위한 HTTPS 환경 필요
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### PWA 아이콘 준비
 
-## Project Setup
+빌드 전에 다음 아이콘 파일을 `public` 폴더에 준비해야 합니다:
 
-```sh
+- `pwa-192x192.png` - 192x192px 아이콘
+- `pwa-512x512.png` - 512x512px 아이콘
+- `apple-touch-icon.png` - iOS용 180x180px 아이콘
+- `mask-icon.svg` - Safari용 마스크 아이콘
+
+현재는 placeholder로 작동하며, 실제 아이콘 파일을 추가하면 자동으로 사용됩니다.
+
+## 프로젝트 구조
+
+```
+src/
+├── assets/          # 정적 자산 (CSS, 이미지 등)
+├── components/      # 재사용 가능한 컴포넌트
+│   ├── common/      # 공통 컴포넌트 (Button, Input, Card 등)
+│   └── layout/      # 레이아웃 컴포넌트 (Header, Navigation 등)
+├── config/          # 설정 파일 (API, 테마 등)
+├── router/          # 라우터 설정
+├── services/        # API 서비스 레이어
+├── stores/          # Pinia 스토어
+└── views/           # 페이지 컴포넌트
+    ├── auth/        # 인증 관련 페이지
+    ├── instructor/  # 강사 회원 페이지
+    ├── academy/     # 학원 회원 페이지
+    └── error/       # 에러 페이지
+```
+
+## 설치 및 실행
+
+### 의존성 설치
+
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### 개발 서버 실행
 
-```sh
+```bash
 npm run dev
 ```
 
-### Compile and Minify for Production
+### 빌드
 
-```sh
+```bash
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### 프로덕션 미리보기
 
-```sh
-npm run lint
+```bash
+npm run preview
 ```
+
+## 환경 변수
+
+`.env.development` 및 `.env.production` 파일을 생성하여 API 엔드포인트를 설정하세요.
+
+```env
+VITE_API_BASE_URL=http://localhost:8000/api/v1
+VITE_APP_TITLE=D-Class
+```
+
+## 주요 기능
+
+### 강사 회원
+- 공고 목록 조회 및 필터링
+- 공고 상세 조회
+- 지원하기
+- 지원 현황 조회
+- 찜한 공고 관리
+- 프로필 관리
+- 인증 서류 제출
+
+### 학원 회원
+- 공고 등록 및 관리
+- 지원자 목록 조회
+- 지원자 상세 조회
+- 채용 확정/불합격 처리
+- 학원 정보 관리
+- 사업자 인증 제출
+
+## 디자인 시스템
+
+프로젝트는 다음과 같은 디자인 시스템을 따릅니다:
+
+- **Primary Color**: #A7C7E7 (Serene Blue)
+- **Accent Color**: #FAB4B4 (Soft Coral)
+- **Typography**: Pretendard 폰트
+- **Mobile-first**: 모바일 우선 반응형 디자인
+
+자세한 내용은 `D-Class Wireframe.txt` 파일을 참고하세요.
+
+## API 명세
+
+API 엔드포인트는 `API_Specification.md` 파일을 참고하세요.
+
+## 라이선스
+
+이 프로젝트는 프로젝트 팀의 소유입니다.
