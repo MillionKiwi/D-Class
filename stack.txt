@@ -17,11 +17,9 @@
 
 UI 프레임워크 (선택):
 - Vuetify 또는 Quasar: 모바일 최적화 컴포넌트
-- 또는 Tailwind CSS + Naive UI
 
 지도 라이브러리:
 - Kakao Map API: 한국 서비스 최적화
-- 또는 Google Maps API / Naver Map API
 
 ==========================================
 🔧 백엔드 (API 서버)
