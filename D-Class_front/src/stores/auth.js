@@ -12,10 +12,13 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (email, password) => {
     loading.value = true
     try {
+      console.log('[Auth Store] Login attempt:', { email, endpoint: API_ENDPOINTS.AUTH.LOGIN })
       const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
         email,
         password,
       })
+
+      console.log('[Auth Store] Login response:', response.data)
 
       const { access, refresh, user: userData } = response.data
       
@@ -29,9 +32,21 @@ export const useAuthStore = defineStore('auth', () => {
 
       return { success: true, user: userData }
     } catch (error) {
+      console.error('[Auth Store] Login error:', error)
+      console.error('[Auth Store] Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          baseURL: error.config?.baseURL,
+        }
+      })
       return {
         success: false,
-        error: error.response?.data?.detail || '로그인에 실패했습니다',
+        error: error.response?.data?.detail || error.message || '로그인에 실패했습니다',
       }
     } finally {
       loading.value = false

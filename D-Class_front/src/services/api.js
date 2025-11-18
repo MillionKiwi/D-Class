@@ -15,17 +15,41 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    console.log('[API Client] Request:', {
+      method: config.method,
+      url: config.url,
+      baseURL: config.baseURL,
+      fullURL: `${config.baseURL}${config.url}`,
+      headers: config.headers,
+    })
     return config
   },
   (error) => {
+    console.error('[API Client] Request error:', error)
     return Promise.reject(error)
   }
 )
 
 // 응답 인터셉터: 토큰 갱신 처리
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('[API Client] Response:', {
+      status: response.status,
+      url: response.config.url,
+      data: response.data,
+    })
+    return response
+  },
   async (error) => {
+    console.error('[API Client] Response error:', {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      url: error.config?.url,
+      baseURL: error.config?.baseURL,
+    })
+
     const originalRequest = error.config
 
     // 401 에러이고 아직 재시도하지 않은 경우
