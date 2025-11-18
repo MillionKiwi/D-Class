@@ -32,6 +32,18 @@ const router = createRouter({
       component: () => import('@/views/auth/RegisterInfoView.vue'),
       meta: { requiresAuth: false, hideNav: true },
     },
+    {
+      path: '/password/reset',
+      name: 'PasswordReset',
+      component: () => import('@/views/auth/PasswordResetView.vue'),
+      meta: { requiresAuth: false, hideNav: true },
+    },
+    {
+      path: '/password/reset/confirm',
+      name: 'PasswordResetConfirm',
+      component: () => import('@/views/auth/PasswordResetConfirmView.vue'),
+      meta: { requiresAuth: false, hideNav: true },
+    },
     // 강사 회원
     {
       path: '/home',
@@ -121,6 +133,12 @@ const router = createRouter({
       path: '/academies/:id',
       name: 'AcademyProfile',
       component: () => import('@/views/instructor/AcademyProfileView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/instructors/:id',
+      name: 'InstructorProfile',
+      component: () => import('@/views/instructor/InstructorProfileView.vue'),
       meta: { requiresAuth: false },
     },
     // 학원 회원
@@ -213,6 +231,12 @@ const router = createRouter({
       path: '/settings/account',
       name: 'AccountSettings',
       component: () => import('@/views/common/AccountSettingsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/settings/password',
+      name: 'PasswordChange',
+      component: () => import('@/views/common/PasswordChangeView.vue'),
       meta: { requiresAuth: true },
     },
     {

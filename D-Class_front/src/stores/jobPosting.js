@@ -145,6 +145,19 @@ export const useJobPostingStore = defineStore('jobPosting', () => {
     }
   }
 
+  // 지도용 공고 목록 조회
+  const fetchMapPostings = async (params = {}) => {
+    loading.value = true
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.JOB_POSTINGS.MAP, { params })
+      return { success: true, data: response.data }
+    } catch (error) {
+      return { success: false, error }
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     postings,
     currentPosting,
@@ -159,5 +172,6 @@ export const useJobPostingStore = defineStore('jobPosting', () => {
     closePosting,
     fetchMyPostings,
     toggleFavorite,
+    fetchMapPostings,
   }
 })

@@ -97,6 +97,62 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // 비밀번호 찾기 (이메일 발송)
+  const requestPasswordReset = async (email) => {
+    loading.value = true
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.PASSWORD_RESET, {
+        email,
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.detail || '비밀번호 재설정 요청에 실패했습니다',
+      }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 비밀번호 재설정
+  const resetPassword = async (token, password) => {
+    loading.value = true
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.PASSWORD_RESET_CONFIRM, {
+        token,
+        password,
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.detail || '비밀번호 재설정에 실패했습니다',
+      }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 비밀번호 변경
+  const changePassword = async (oldPassword, newPassword) => {
+    loading.value = true
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.USERS.PASSWORD_CHANGE, {
+        old_password: oldPassword,
+        new_password: newPassword,
+      })
+      return { success: true, data: response.data }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.detail || '비밀번호 변경에 실패했습니다',
+      }
+    } finally {
+      loading.value = false
+    }
+  }
+
   // 초기화: 저장된 토큰 확인
   const init = async () => {
     const token = localStorage.getItem('access_token')
@@ -114,6 +170,9 @@ export const useAuthStore = defineStore('auth', () => {
     checkEmail,
     logout,
     fetchCurrentUser,
+    requestPasswordReset,
+    resetPassword,
+    changePassword,
     init,
   }
 })

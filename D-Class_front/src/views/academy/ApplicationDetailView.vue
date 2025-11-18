@@ -40,6 +40,12 @@
           <h4>자기소개</h4>
           <p>{{ application.instructor.bio }}</p>
         </div>
+
+        <div class="profile-action">
+          <Button variant="secondary" small @click="viewInstructorProfile">
+            강사 프로필 보기
+          </Button>
+        </div>
       </div>
 
       <div class="action-section">
@@ -161,6 +167,15 @@ const getStatusBadgeVariant = (status) => {
   return variants[status] || 'info'
 }
 
+const viewInstructorProfile = () => {
+  if (application.value?.instructor?.id) {
+    router.push({
+      name: 'InstructorProfile',
+      params: { id: application.value.instructor.id },
+    })
+  }
+}
+
 onMounted(() => {
   fetchApplication()
 })
@@ -256,6 +271,13 @@ onMounted(() => {
   line-height: 1.6;
   color: var(--color-text-primary);
   white-space: pre-wrap;
+}
+
+.profile-action {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-divider);
+  text-align: center;
 }
 
 .action-section {
