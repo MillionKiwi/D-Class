@@ -27,7 +27,11 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-5&$8udihn(n9^*@k9cc9h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+# 개발 환경에서는 모든 호스트 허용 (동일 네트워크 접근용)
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 
 # Application definition
@@ -58,6 +62,7 @@ INSTALLED_APPS = [
     'favorites',
     'notifications',
     'common',
+    'boards',
 ]
 
 MIDDLEWARE = [

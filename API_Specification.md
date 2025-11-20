@@ -1836,17 +1836,19 @@ Authorization: Bearer {admin_access_token}
    - 토큰은 HTTP-only 쿠키 또는 로컬 스토리지에 저장
 
 2. **인증 필요 엔드포인트**
-   - 모든 `/users/me/`, `/instructors/me/`, `/applications/`, `/reviews/`, `/favorites/`, `/notifications/` 엔드포인트는 인증 필요
+   - 모든 `/users/me/`, `/instructors/me/`, `/applications/`, `/reviews/`, `/favorites/`, `/notifications/`, `/posts/` (작성/수정/삭제) 엔드포인트는 인증 필요
 
 3. **권한 검증**
    - 학원은 자신의 공고만 수정/삭제 가능
    - 강사는 자신의 프로필만 수정 가능
    - 리뷰는 작성자만 수정/삭제 가능
+   - 게시글은 작성자만 수정/삭제 가능
 
 4. **파일 업로드**
    - 최대 파일 크기: 10MB
-   - 허용 형식: JPG, PNG, PDF
+   - 허용 형식: JPG, PNG, PDF (인증 서류), JPG, PNG (게시글 이미지)
    - 파일은 암호화되어 저장
+   - 게시글 이미지는 최대 5개까지 업로드 가능
 
 5. **Rate Limiting**
    - 일반 API: 분당 60회
@@ -1858,6 +1860,7 @@ Authorization: Bearer {admin_access_token}
 ## 📅 버전 히스토리
 
 - **v1.0** (2025년 1월): 초기 API 명세서 작성
+- **v1.1** (2025년 1월): 게시판 API 추가
 
 ---
 
@@ -1893,6 +1896,275 @@ Authorization: Bearer {admin_access_token}
 - `DELETE /search/recent/{keyword}/` - 최근 검색어 삭제 (LocalStorage 사용)
 
 자세한 내용은 `API_Optimization_Notes.md` 파일을 참고하세요.
+
+---
+
+## 📋 게시판 (Board)
+
+### 15.1 게시판 목록 조회
+**GET** `/boards/`
+
+헤더 (선택):
+```
+Authorization: Bearer {access_token}
+```
+
+응답 (200 OK):
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 1,
+      "name": "발레 작품 이야기",
+      "description": "발레 작품 해설을 공유하는 게시판입니다",
+      "posts_count": 10,
+      "is_active": true
+    }
+  ]
+}
+```
+
+---
+
+### 15.2 게시글 목록 조회
+**GET** `/posts/`
+
+헤더 (선택):
+```
+Authorization: Bearer {access_token}
+```
+
+쿼리 파라미터:
+- `board_name`: 게시판 이름 (기본값: "발레 작품 이야기")
+- `page`: 페이지 번호
+- `page_size`: 페이지당 항목 수
+
+응답 (200 OK):
+```json
+{
+  "count": 10,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "title": "백조의 호수 해설",
+      "author": {
+        "id": 1,
+        "name": "홍길동",
+        "profile_image": "https://...",
+        "is_verified": true
+      },
+      "thumbnail": "https://...",
+      "views": 25,
+      "images_count": 2,
+      "comments_count": 0,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### 15.3 게시글 상세 조회
+**GET** `/posts/{post_id}/`
+
+헤더 (선택):
+```
+Authorization: Bearer {access_token}
+```
+
+응답 (200 OK):
+```json
+{
+  "id": 1,
+  "title": "백조의 호수 해설",
+  "content": "백조의 호수는...",
+  "author": {
+    "id": 1,
+    "name": "홍길동",
+    "profile_image": "https://...",
+    "is_verified": true
+  },
+  "images": [
+    {
+      "id": 1,
+      "image": "https://...",
+      "order": 0
+    }
+  ],
+  "views": 25,
+  "comments_count": 0,
+  "is_author": false,
+  "created_at": "2025-01-01T00:00:00Z",
+  "updated_at": "2025-01-01T00:00:00Z"
+}
+```
+
+---
+
+### 15.4 게시글 작성
+**POST** `/posts/`
+
+헤더:
+```
+Authorization: Bearer {access_token}
+Content-Type: multipart/form-data
+```
+
+요청 본문 (Form Data):
+```
+title: 백조의 호수 해설
+content: 백조의 호수는 차이콥스키의 대표작으로...
+images: (파일1, 파일2, ...) (최대 5개)
+```
+
+응답 (201 Created):
+```json
+{
+  "id": 1,
+  "title": "백조의 호수 해설",
+  "content": "백조의 호수는...",
+  "author": {
+    "id": 1,
+    "name": "홍길동",
+    "profile_image": "https://...",
+    "is_verified": true
+  },
+  "images": [
+    {
+      "id": 1,
+      "image": "https://...",
+      "order": 0
+    }
+  ],
+  "views": 0,
+  "comments_count": 0,
+  "is_author": true,
+  "created_at": "2025-01-01T00:00:00Z",
+  "updated_at": "2025-01-01T00:00:00Z"
+}
+```
+
+에러 응답 (400 Bad Request):
+```json
+{
+  "title": ["제목을 입력해주세요"],
+  "content": ["내용은 최소 10자 이상 입력해주세요"]
+}
+```
+
+---
+
+### 15.5 게시글 수정
+**PATCH** `/posts/{post_id}/`
+
+헤더:
+```
+Authorization: Bearer {access_token}
+Content-Type: multipart/form-data
+```
+
+요청 본문 (Form Data):
+```
+title: 백조의 호수 해설 (수정)
+content: 수정된 내용...
+images: (새 파일1, 새 파일2, ...) (최대 5개)
+delete_image_ids: [1, 2] (삭제할 이미지 ID 배열)
+```
+
+응답 (200 OK):
+```json
+{
+  "id": 1,
+  "title": "백조의 호수 해설 (수정)",
+  "content": "수정된 내용...",
+  ...
+}
+```
+
+에러 응답 (403 Forbidden):
+```json
+{
+  "detail": "본인이 작성한 게시글만 수정할 수 있습니다"
+}
+```
+
+---
+
+### 15.6 게시글 삭제
+**DELETE** `/posts/{post_id}/`
+
+헤더:
+```
+Authorization: Bearer {access_token}
+```
+
+응답 (204 No Content)
+
+에러 응답 (403 Forbidden):
+```json
+{
+  "detail": "본인이 작성한 게시글만 삭제할 수 있습니다"
+}
+```
+
+---
+
+### 15.7 조회수 증가
+**POST** `/posts/{post_id}/increment_views/`
+
+헤더 (선택):
+```
+Authorization: Bearer {access_token}
+```
+
+응답 (200 OK):
+```json
+{
+  "views": 26
+}
+```
+
+---
+
+### 15.8 게시판별 게시글 목록 조회
+**GET** `/boards/{board_name}/posts/`
+
+헤더 (선택):
+```
+Authorization: Bearer {access_token}
+```
+
+쿼리 파라미터:
+- `page`: 페이지 번호
+- `page_size`: 페이지당 항목 수
+
+응답 (200 OK):
+```json
+{
+  "count": 10,
+  "results": [
+    {
+      "id": 1,
+      "title": "백조의 호수 해설",
+      "author": {
+        "id": 1,
+        "name": "홍길동",
+        "profile_image": "https://...",
+        "is_verified": true
+      },
+      "thumbnail": "https://...",
+      "views": 25,
+      "images_count": 2,
+      "comments_count": 0,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  ]
+}
+```
 
 ---
 

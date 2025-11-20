@@ -77,10 +77,22 @@ export const useAuthStore = defineStore('auth', () => {
       })
       return { success: true, available: response.data.available }
     } catch (error) {
+      const status = error.response?.status
+      const data = error.response?.data
+
+      // 400이면 이미 사용 중인 이메일이라는 의미이므로 정상 흐름으로 간주
+      if (status === 400 && data?.available === false) {
+        return {
+          success: true,
+          available: false,
+          message: data?.message || '이미 사용 중인 이메일입니다',
+        }
+      }
+
       return {
         success: false,
         available: false,
-        error: error.response?.data?.message || '이메일 확인에 실패했습니다',
+        error: data?.message || '이메일 확인에 실패했습니다',
       }
     }
   }

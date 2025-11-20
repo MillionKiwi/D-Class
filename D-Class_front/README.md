@@ -71,20 +71,38 @@ npm run dev
 npm run build
 ```
 
-### 프로덕션 미리보기
+### 프로덕션 빌드 및 실행
 
+1. **프로덕션 빌드 생성**
 ```bash
+npm run build
+```
+
+2. **프로덕션 서버 실행** (빌드된 파일로 실행)
+```bash
+npm run serve
+# 또는
 npm run preview
 ```
 
+프로덕션 서버는 기본적으로 `http://localhost:4173`에서 실행되며, 동일 네트워크의 다른 기기에서 접속하려면 환경 변수에서 설정한 IP 주소로 접속하세요.
+
 ## 환경 변수
 
-`.env.development` 및 `.env.production` 파일을 생성하여 API 엔드포인트를 설정하세요.
+`env.example`을 복사하여 `.env` 파일을 생성한 뒤, 네트워크 환경에 맞게 값을 수정하세요.
 
-```env
-VITE_API_BASE_URL=http://localhost:8000/api/v1
-VITE_APP_TITLE=D-Match
+```bash
+cp env.example .env
 ```
+
+| 변수 | 설명 | 기본값 |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | 프론트엔드에서 직접 호출할 API 베이스 URL (프록시를 사용하지 않을 때) | `http://localhost:8000/api/v1` |
+| `VITE_API_TARGET` | Vite 개발 서버 프록시가 전달할 백엔드 주소 | `http://localhost:8000` |
+| `VITE_DEV_HOST` | 개발 서버 호스트 (동일 네트워크 허용) | `0.0.0.0` |
+| `VITE_DEV_PORT` | 개발 서버 포트 | `5173` |
+
+동일 네트워크의 다른 기기에서 접속하려면, `VITE_API_BASE_URL`과 `VITE_API_TARGET`에 **현재 PC의 IP 주소**를 포함한 값을 설정하세요.
 
 ## 주요 기능
 

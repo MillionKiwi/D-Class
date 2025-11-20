@@ -12,17 +12,15 @@
       <slot></slot>
     </main>
     <BottomNavigation v-if="!hideNav" />
-    <Toast ref="toastRef" />
   </div>
 </template>
 
 <script setup>
-import { ref, provide, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNotificationStore } from '@/stores/notification'
 import AppHeader from './AppHeader.vue'
 import BottomNavigation from './BottomNavigation.vue'
-import Toast from '@/components/common/Toast.vue'
 
 const props = defineProps({
   hideNav: {
@@ -55,17 +53,6 @@ const unreadCountComputed = computed(() => {
 
 defineEmits(['search', 'notification'])
 
-const toastRef = ref(null)
-
-// Toast 메서드를 provide로 제공
-const showToast = (message, type = 'info', duration = 3000) => {
-  if (toastRef.value) {
-    toastRef.value.message = message
-    toastRef.value.type = type
-    toastRef.value.show()
-  }
-}
-
 const handleSearch = () => {
   router.push({ name: 'Search' })
 }
@@ -73,8 +60,6 @@ const handleSearch = () => {
 const handleNotification = () => {
   router.push({ name: 'Notifications' })
 }
-
-provide('toast', showToast)
 </script>
 
 <style scoped>

@@ -40,7 +40,7 @@
       </div>
 
       <!-- 문의하기 모달 -->
-      <Modal v-model:visible="showInquiryModal" title="1:1 문의하기" @close="showInquiryModal = false">
+      <Modal :visible="showInquiryModal" title="1:1 문의하기" @close="showInquiryModal = false">
         <form @submit.prevent="handleSubmit" class="inquiry-form">
           <div class="input-wrapper">
             <label class="input-label">
@@ -76,12 +76,11 @@
               required
             ></textarea>
           </div>
-
-          <template #footer>
-            <Button variant="secondary" @click="showInquiryModal = false">취소</Button>
-            <Button type="submit" :loading="submitting">등록</Button>
-          </template>
         </form>
+        <template #footer>
+          <Button variant="secondary" @click="showInquiryModal = false">취소</Button>
+          <Button type="button" @click="handleSubmit" :loading="submitting">등록</Button>
+        </template>
       </Modal>
     </div>
   </AppLayout>
@@ -100,7 +99,7 @@ import Input from '@/components/common/Input.vue'
 import Modal from '@/components/common/Modal.vue'
 
 const router = useRouter()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const showInquiryModal = ref(false)
 const submitting = ref(false)

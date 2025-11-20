@@ -60,7 +60,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const router = useRouter()
 const notificationStore = useNotificationStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const { notifications, loading, unreadCount } = notificationStore
 

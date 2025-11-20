@@ -31,6 +31,7 @@ urlpatterns = [
     path('api/v1/', include('favorites.urls')),
     path('api/v1/', include('notifications.urls')),
     path('api/v1/', include('common.urls')),
+    path('api/v1/', include('boards.urls')),
 ]
 
 # Media files serving (development only)

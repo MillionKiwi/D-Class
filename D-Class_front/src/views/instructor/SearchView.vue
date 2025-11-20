@@ -116,7 +116,7 @@ import Button from '@/components/common/Button.vue'
 
 const router = useRouter()
 const jobPostingStore = useJobPostingStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const searchInput = ref(null)
 const searchQuery = ref('')

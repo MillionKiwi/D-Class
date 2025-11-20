@@ -68,7 +68,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { formatGenres } from '@/utils/formatters'
 
 const router = useRouter()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const hiredInstructors = ref([])
 const loading = ref(false)

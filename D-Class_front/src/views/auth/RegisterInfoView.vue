@@ -174,7 +174,7 @@ import { inject } from 'vue'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const role = ref(route.query.role || 'instructor')
 
@@ -275,15 +275,25 @@ const handleAllAgreed = () => {
 }
 
 const checkEmailAvailability = async () => {
+  errors.email = ''
   if (!form.email) return
 
   const result = await authStore.checkEmail(form.email)
-  if (result.success) {
-    if (!result.available) {
-      errors.email = '이미 사용 중인 이메일입니다'
-    } else {
-      errors.email = ''
-    }
+
+  if (result.available === false) {
+    errors.email = result.message || '이미 사용 중인 이메일입니다'
+    return
+  }
+
+  if (result.available === true) {
+    errors.email = ''
+    return
+  }
+
+  if (!result.success) {
+    const message = result.error || '이메일 확인 중 오류가 발생했습니다'
+    errors.email = message
+    showToast(message, 'error')
   }
 }
 

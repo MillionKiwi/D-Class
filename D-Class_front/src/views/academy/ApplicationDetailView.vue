@@ -120,7 +120,7 @@ import { formatGenres } from '@/utils/formatters'
 const route = useRoute()
 const router = useRouter()
 const applicationStore = useApplicationStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const applicationId = computed(() => parseInt(route.params.id))
 const application = computed(() => applicationStore.currentApplication)

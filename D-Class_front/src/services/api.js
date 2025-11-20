@@ -41,14 +41,25 @@ apiClient.interceptors.response.use(
     return response
   },
   async (error) => {
-    console.error('[API Client] Response error:', {
-      message: error.message,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      url: error.config?.url,
-      baseURL: error.config?.baseURL,
-    })
+    const status = error.response?.status
+    const data = error.response?.data
+    const url = error.config?.url || ''
+
+    const isDuplicateEmailCheck =
+      status === 400 &&
+      data?.available === false &&
+      url.includes('/auth/check-email')
+
+    if (!isDuplicateEmailCheck) {
+      console.error('[API Client] Response error:', {
+        message: error.message,
+        status,
+        statusText: error.response?.statusText,
+        data,
+        url,
+        baseURL: error.config?.baseURL,
+      })
+    }
 
     const originalRequest = error.config
 

@@ -92,4 +92,15 @@ export const API_ENDPOINTS = {
     FAQ: '/faq/',
     INQUIRIES: '/inquiries/',
   },
+  // 게시판
+  BOARDS: {
+    POSTS: {
+      LIST: '/posts/',
+      CREATE: '/posts/',
+      DETAIL: (id) => `/posts/${id}/`,
+      UPDATE: (id) => `/posts/${id}/`,
+      DELETE: (id) => `/posts/${id}/`,
+      INCREMENT_VIEWS: (id) => `/posts/${id}/increment_views/`,
+    },
+  },
 }

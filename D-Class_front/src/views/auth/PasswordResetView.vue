@@ -47,7 +47,7 @@ import Card from '@/components/common/Card.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const form = reactive({
   email: '',

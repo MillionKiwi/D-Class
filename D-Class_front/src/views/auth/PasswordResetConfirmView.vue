@@ -55,7 +55,7 @@ import Button from '@/components/common/Button.vue'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const form = reactive({
   password: '',

@@ -67,7 +67,7 @@ import Modal from '@/components/common/Modal.vue'
 
 const router = useRouter()
 const reviewStore = useReviewStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const { reviews, loading } = reviewStore
 const showDeleteModal = ref(false)

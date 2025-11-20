@@ -246,6 +246,30 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/board',
+      name: 'Board',
+      component: () => import('@/views/common/BoardView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/board/write',
+      name: 'BoardWrite',
+      component: () => import('@/views/common/BoardWriteView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/board/:id',
+      name: 'BoardDetail',
+      component: () => import('@/views/common/BoardDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/board/:id/edit',
+      name: 'BoardEdit',
+      component: () => import('@/views/common/BoardWriteView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/settings/password',
       name: 'PasswordChange',
       component: () => import('@/views/common/PasswordChangeView.vue'),

@@ -133,7 +133,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 const route = useRoute()
 const router = useRouter()
 const reviewStore = useReviewStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const instructorId = computed(() => route.params.id)
 const instructor = ref(null)

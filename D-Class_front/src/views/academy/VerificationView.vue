@@ -95,7 +95,7 @@ import Badge from '@/components/common/Badge.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const verificationStore = useVerificationStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const fileInput = ref(null)
 const selectedFile = ref(null)

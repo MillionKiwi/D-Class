@@ -75,7 +75,7 @@ import Button from '@/components/common/Button.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const genreOptions = [
   { value: 'ballet', label: '발레' },

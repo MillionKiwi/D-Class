@@ -69,7 +69,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const router = useRouter()
 const jobPostingStore = useJobPostingStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const favorites = ref([])
 const loading = ref(false)

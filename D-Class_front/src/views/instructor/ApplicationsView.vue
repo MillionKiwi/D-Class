@@ -109,7 +109,7 @@ import Modal from '@/components/common/Modal.vue'
 
 const router = useRouter()
 const applicationStore = useApplicationStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const tabs = [
   { value: '', label: '전체' },

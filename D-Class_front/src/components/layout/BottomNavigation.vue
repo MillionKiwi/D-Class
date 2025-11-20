@@ -44,6 +44,13 @@ const instructorNavItems = [
       'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
   },
   {
+    name: 'Board',
+    to: '/board',
+    label: '게시판',
+    iconPath:
+      'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8',
+  },
+  {
     name: 'Profile',
     to: '/profile',
     label: '마이페이지',
@@ -73,6 +80,13 @@ const academyNavItems = [
     label: '리뷰 관리',
     iconPath:
       'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+  },
+  {
+    name: 'Board',
+    to: '/board',
+    label: '게시판',
+    iconPath:
+      'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8',
   },
   {
     name: 'AcademyManage',

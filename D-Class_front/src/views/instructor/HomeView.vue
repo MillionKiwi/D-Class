@@ -198,7 +198,7 @@ const unreadCount = computed(() => notificationStore.unreadCount)
 
 const router = useRouter()
 const jobPostingStore = useJobPostingStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const regions = [
   { value: 'seoul', label: '서울' },

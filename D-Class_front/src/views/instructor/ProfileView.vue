@@ -109,7 +109,7 @@ import Modal from '@/components/common/Modal.vue'
 const router = useRouter()
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const user = computed(() => authStore.user)
 const loading = computed(() => authStore.loading)

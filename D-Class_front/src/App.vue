@@ -1,10 +1,21 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref, provide } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
+import Toast from '@/components/common/Toast.vue'
 
 const authStore = useAuthStore()
-const router = useRouter()
+const toastRef = ref(null)
+
+const showToast = (message, type = 'info', duration = 3000) => {
+  if (toastRef.value) {
+    toastRef.value.message = message
+    toastRef.value.type = type
+    toastRef.value.duration = duration
+    toastRef.value.show()
+  }
+}
+
+provide('toast', showToast)
 
 onMounted(async () => {
   await authStore.init()
@@ -13,6 +24,7 @@ onMounted(async () => {
 
 <template>
   <RouterView />
+  <Toast ref="toastRef" />
 </template>
 
 <style>

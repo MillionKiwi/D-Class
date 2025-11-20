@@ -68,7 +68,7 @@ import Modal from '@/components/common/Modal.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const showWithdrawModal = ref(false)
 const withdrawPassword = ref('')

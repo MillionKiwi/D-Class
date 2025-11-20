@@ -1,13 +1,19 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const devHost = env.VITE_DEV_HOST || '0.0.0.0'
+  const devPort = Number(env.VITE_DEV_PORT || 5173)
+  const apiTarget = env.VITE_API_TARGET || 'http://localhost:8000'
+
+  return {
+    plugins: [
     vue(),
     vueDevTools(),
     VitePWA({
@@ -81,29 +87,32 @@ export default defineConfig({
       }
     }),
   ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      },
     },
-  },
-  server: {
-    proxy: {
-      '/api/v1': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-        secure: false,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, res) => {
-            console.log('proxy error', err)
-          })
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Sending Request to the Target:', req.method, req.url)
-          })
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url)
-          })
+    server: {
+      host: devHost,
+      port: devPort,
+      proxy: {
+        '/api/v1': {
+          target: apiTarget,
+          changeOrigin: true,
+          secure: false,
+          configure: (proxy, _options) => {
+            proxy.on('error', (err, _req, res) => {
+              console.log('proxy error', err)
+            })
+            proxy.on('proxyReq', (proxyReq, req, _res) => {
+              console.log('Sending Request to the Target:', req.method, req.url)
+            })
+            proxy.on('proxyRes', (proxyRes, req, _res) => {
+              console.log('Received Response from the Target:', proxyRes.statusCode, req.url)
+            })
+          },
         },
       },
     },
-  },
+  }
 })

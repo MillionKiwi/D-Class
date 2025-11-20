@@ -61,7 +61,7 @@ import Button from '@/components/common/Button.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const notificationStore = useNotificationStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const localSettings = ref({
   application_result: true,
