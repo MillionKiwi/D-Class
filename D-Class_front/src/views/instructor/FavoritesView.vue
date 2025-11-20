@@ -35,7 +35,7 @@
           <h4 class="posting-title">{{ favorite.job_posting.title }}</h4>
 
           <div class="posting-info">
-            <span class="info-item">🎭 {{ favorite.job_posting.genres.join(', ') }}</span>
+            <span class="info-item">🎭 {{ formatGenres(favorite.job_posting.genres) }}</span>
             <span class="info-item">💰 {{ formatSalary(favorite.job_posting) }}</span>
           </div>
 
@@ -60,6 +60,7 @@ import { useJobPostingStore } from '@/stores/jobPosting'
 import apiClient from '@/services/api'
 import { API_ENDPOINTS } from '@/config/api'
 import { inject } from 'vue'
+import { formatGenres } from '@/utils/formatters'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'

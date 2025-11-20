@@ -1,6 +1,6 @@
-# D-Class 백엔드 프로젝트
+# D-Match 백엔드 프로젝트
 
-D-Class (디클래스) 백엔드 API 서버입니다.
+D-Match (디매치) 백엔드 API 서버입니다.
 
 ## 기술 스택
 
@@ -148,7 +148,7 @@ API 기본 URL: `http://localhost:8000/api/v1/`
 ## 참고 문서
 
 - `../API_Specification.md` - API 명세서
-- `../D-Class Wireframe.txt` - UI 설계 명세서
+- `../D-Match Wireframe.txt` - UI 설계 명세서
 - `../stack.txt` - 기술 스택 정보
 
 ## 문제 해결

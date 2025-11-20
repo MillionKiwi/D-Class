@@ -1,6 +1,12 @@
 <template>
   <AppLayout>
     <div class="applications-page page-container">
+      <div v-if="jobPostingId" class="page-header">
+        <Button variant="text" small @click="router.push('/academy/applications')">
+          ← 전체 지원자 보기
+        </Button>
+        <h2 class="page-title">공고 지원자 목록</h2>
+      </div>
       <div class="tabs">
         <button
           v-for="tab in tabs"
@@ -42,7 +48,7 @@
                   </Badge>
                 </h3>
                 <p class="instructor-specialties">
-                  {{ application.instructor.specialties?.join(', ') || '-' }}
+                  {{ formatGenres(application.instructor.specialties) || '-' }}
                 </p>
               </div>
             </div>
@@ -69,15 +75,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useApplicationStore } from '@/stores/application'
+import { storeToRefs } from 'pinia'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
 import Badge from '@/components/common/Badge.vue'
+import Button from '@/components/common/Button.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { formatGenres } from '@/utils/formatters'
 
 const router = useRouter()
+const route = useRoute()
 const applicationStore = useApplicationStore()
 
 const tabs = [
@@ -90,12 +100,23 @@ const tabs = [
 
 const currentTab = ref('')
 
-const { applications, loading } = applicationStore
+// storeToRefs를 사용하여 반응성 유지
+const { applications, loading } = storeToRefs(applicationStore)
+
+// 쿼리 파라미터에서 job_posting ID 가져오기
+const jobPostingId = computed(() => {
+  const id = route.query.job_posting
+  return id ? parseInt(id) : null
+})
 
 const fetchApplications = async () => {
   const params = {}
   if (currentTab.value) {
     params.status = currentTab.value === 'new' ? 'pending' : currentTab.value
+  }
+  // job_posting 쿼리 파라미터가 있으면 필터링
+  if (jobPostingId.value) {
+    params.job_posting = jobPostingId.value
   }
   await applicationStore.fetchApplications(params)
 }
@@ -129,6 +150,11 @@ watch(currentTab, () => {
   fetchApplications()
 })
 
+// 쿼리 파라미터 변경 감지
+watch(() => route.query.job_posting, () => {
+  fetchApplications()
+})
+
 onMounted(() => {
   fetchApplications()
 })
@@ -137,6 +163,16 @@ onMounted(() => {
 <style scoped>
 .applications-page {
   padding: var(--spacing-lg);
+}
+
+.page-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: var(--spacing-sm);
 }
 
 .tabs {

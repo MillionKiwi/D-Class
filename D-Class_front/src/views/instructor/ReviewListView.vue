@@ -7,13 +7,13 @@
 
       <div v-if="reviewData" class="review-summary card">
         <div class="summary-header">
-          <h2>{{ reviewData.academy?.name || reviewData.instructor?.name }}</h2>
+          <h2>{{ reviewData.academy?.name || reviewData.instructor?.name || '리뷰' }}</h2>
           <div class="rating-info">
-            <span class="rating-value">⭐ {{ averageRating }}</span>
+            <span class="rating-value">⭐ {{ averageRating || 'N/A' }}</span>
             <span class="review-count">({{ reviewCount }}개 리뷰)</span>
           </div>
         </div>
-        <div v-if="ratingDistribution" class="rating-distribution">
+        <div v-if="ratingDistribution && reviewCount > 0" class="rating-distribution">
           <div
             v-for="(count, star) in ratingDistribution"
             :key="star"
@@ -81,17 +81,26 @@ const reviewStore = useReviewStore()
 const props = defineProps({
   targetType: {
     type: String,
-    required: true,
-    validator: (value) => ['academy', 'instructor'].includes(value),
+    required: false,
+    validator: (value) => !value || ['academy', 'instructor'].includes(value),
   },
   targetId: {
     type: [String, Number],
-    required: true,
+    required: false,
   },
 })
 
+// 라우트 파라미터 또는 props에서 값을 가져옴
+const targetType = computed(() => {
+  return props.targetType || route.params.targetType
+})
+
+const targetId = computed(() => {
+  return props.targetId || route.params.targetId
+})
+
 const title = computed(() => {
-  return props.targetType === 'academy' ? '학원 리뷰' : '강사 리뷰'
+  return targetType.value === 'academy' ? '학원 리뷰' : '강사 리뷰'
 })
 
 const ordering = ref('-created_at')
@@ -100,30 +109,47 @@ const reviews = ref([])
 const loading = computed(() => reviewStore.loading)
 
 const averageRating = computed(() => {
-  return reviewData.value?.academy?.average_rating || reviewData.value?.instructor?.average_rating || 0
+  if (!reviewData.value) return 0
+  return reviewData.value.academy?.average_rating || reviewData.value.instructor?.average_rating || 0
 })
 
 const reviewCount = computed(() => {
-  return reviewData.value?.academy?.review_count || reviewData.value?.instructor?.review_count || 0
+  if (!reviewData.value) return 0
+  return reviewData.value.count || 0
 })
 
 const ratingDistribution = computed(() => {
-  return reviewData.value?.rating_distribution || null
+  if (!reviewData.value) return null
+  return reviewData.value.rating_distribution || null
 })
 
 const fetchReviews = async () => {
+  if (!targetType.value || !targetId.value) {
+    console.error('targetType or targetId is missing')
+    return
+  }
+
   const params = { ordering: ordering.value }
   let result
 
-  if (props.targetType === 'academy') {
-    result = await reviewStore.fetchAcademyReviews(props.targetId, params)
+  if (targetType.value === 'academy') {
+    result = await reviewStore.fetchAcademyReviews(targetId.value, params)
   } else {
-    result = await reviewStore.fetchInstructorReviews(props.targetId, params)
+    result = await reviewStore.fetchInstructorReviews(targetId.value, params)
   }
 
   if (result.success) {
+    // API 응답 구조: { count, next, previous, results: { academy/instructor, rating_distribution, count, results: [...] } }
+    // results가 중첩되어 있으므로 result.data.results가 실제 데이터 객체
+    if (result.data.results && typeof result.data.results === 'object' && !Array.isArray(result.data.results)) {
+      // Pagination이 적용된 경우
+      reviewData.value = result.data.results
+      reviews.value = result.data.results.results || []
+    } else {
+      // Pagination이 적용되지 않은 경우 (직접 Response 반환)
     reviewData.value = result.data
     reviews.value = result.data.results || []
+    }
   }
 }
 
@@ -135,6 +161,11 @@ const formatDate = (dateString) => {
 watch(ordering, () => {
   fetchReviews()
 })
+
+// 라우트 파라미터 변경 감지
+watch(() => route.params, () => {
+  fetchReviews()
+}, { deep: true })
 
 onMounted(() => {
   fetchReviews()

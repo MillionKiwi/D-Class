@@ -61,21 +61,36 @@
           <span>계정 설정</span>
           <span>→</span>
         </router-link>
+        <router-link to="/subscription" class="menu-item">
+          <span>구독</span>
+          <span>→</span>
+        </router-link>
         <router-link to="/support" class="menu-item">
           <span>고객센터</span>
           <span>→</span>
         </router-link>
-        <button class="menu-item logout-btn" @click="handleLogout">
+        <button class="menu-item logout-btn" @click="showLogoutModal = true">
           <span>로그아웃</span>
           <span>→</span>
         </button>
       </div>
     </div>
+
+    <!-- 로그아웃 확인 모달 -->
+    <Modal :visible="showLogoutModal" title="로그아웃" @close="showLogoutModal = false">
+      <div class="logout-confirm">
+        <p>정말 로그아웃하시겠습니까?</p>
+      </div>
+      <template #footer>
+        <Button variant="secondary" @click="showLogoutModal = false">취소</Button>
+        <Button variant="primary" @click="handleLogout">로그아웃</Button>
+      </template>
+    </Modal>
   </AppLayout>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { inject } from 'vue'
@@ -83,12 +98,14 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'
 import Badge from '@/components/common/Badge.vue'
+import Modal from '@/components/common/Modal.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const showToast = inject('toast')
 
 const user = computed(() => authStore.user)
+const showLogoutModal = ref(false)
 
 const getVerificationLabel = (status) => {
   const labels = {
@@ -111,6 +128,7 @@ const getVerificationBadgeVariant = (status) => {
 }
 
 const handleLogout = async () => {
+  showLogoutModal.value = false
   await authStore.logout()
   showToast('로그아웃되었습니다', 'success')
   router.push('/login')
@@ -209,5 +227,16 @@ onMounted(async () => {
   text-align: left;
   cursor: pointer;
   font-size: 16px;
+}
+
+.logout-confirm {
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.logout-confirm p {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-text-primary);
 }
 </style>

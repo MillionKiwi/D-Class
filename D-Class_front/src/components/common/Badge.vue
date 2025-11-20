@@ -9,7 +9,7 @@ defineProps({
   variant: {
     type: String,
     default: 'info',
-    validator: (value) => ['success', 'warning', 'error', 'info'].includes(value),
+    validator: (value) => ['success', 'warning', 'error', 'info', 'disabled'].includes(value),
   },
   small: {
     type: Boolean,

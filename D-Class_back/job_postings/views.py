@@ -51,10 +51,16 @@ class JobPostingViewSet(viewsets.ModelViewSet):
             # 목록 조회 시 기본적으로 active만 표시
             queryset = queryset.filter(status='active')
         
-        # 장르 필터
+        # 장르 필터 (다중 지원: 쉼표로 구분된 여러 장르 중 하나라도 포함)
         genre = self.request.query_params.get('genre')
         if genre:
-            queryset = queryset.filter(genres__contains=[genre])
+            genres = [g.strip() for g in genre.split(',') if g.strip()]
+            if genres:
+                # OR 조건: 여러 장르 중 하나라도 포함된 공고
+                q_objects = Q()
+                for g in genres:
+                    q_objects |= Q(genres__contains=[g])
+                queryset = queryset.filter(q_objects)
         
         # 지도 뷰 필터 (위도/경도/반경)
         lat = self.request.query_params.get('lat')
@@ -68,9 +74,13 @@ class JobPostingViewSet(viewsets.ModelViewSet):
         return queryset
     
     def perform_create(self, serializer):
-        if self.request.user.role != 'academy':
+        user = self.request.user
+        if user.role != 'academy':
             raise PermissionDenied('학원만 공고를 등록할 수 있습니다')
-        serializer.save(academy=self.request.user, status='pending')
+        if user.verification_status != 'approved':
+            raise PermissionDenied('인증이 완료된 학원만 공고를 등록할 수 있습니다')
+        # serializer의 create 메서드에서 이미 academy와 status를 설정하므로 save()만 호출
+        serializer.save()
     
     def perform_update(self, serializer):
         if serializer.instance.academy != self.request.user:

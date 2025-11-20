@@ -1,6 +1,6 @@
-# D-Class Frontend
+# D-Match Frontend
 
-D-Class (디클래스) 프론트엔드 프로젝트입니다.
+D-Match (디매치) 프론트엔드 프로젝트입니다.
 
 ## 기술 스택
 
@@ -83,7 +83,7 @@ npm run preview
 
 ```env
 VITE_API_BASE_URL=http://localhost:8000/api/v1
-VITE_APP_TITLE=D-Class
+VITE_APP_TITLE=D-Match
 ```
 
 ## 주요 기능
@@ -114,7 +114,7 @@ VITE_APP_TITLE=D-Class
 - **Typography**: Pretendard 폰트
 - **Mobile-first**: 모바일 우선 반응형 디자인
 
-자세한 내용은 `D-Class Wireframe.txt` 파일을 참고하세요.
+자세한 내용은 `D-Match Wireframe.txt` 파일을 참고하세요.
 
 ## API 명세
 

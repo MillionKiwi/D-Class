@@ -22,7 +22,7 @@
           :key="posting.id"
           class="posting-card"
           clickable
-          @click="$router.push(`/academy/postings/${posting.id}`)"
+          @click="viewPostingApplicants(posting.id)"
         >
           <div class="posting-header">
             <h3 class="posting-title">{{ posting.title }}</h3>
@@ -32,7 +32,7 @@
           </div>
 
           <div class="posting-info">
-            <span class="info-item">🎭 {{ posting.genres?.join(', ') || '-' }}</span>
+            <span class="info-item">🎭 {{ formatGenres(posting.genres) || '-' }}</span>
             <span class="info-item">💰 {{ formatSalary(posting) }}</span>
           </div>
 
@@ -77,6 +77,9 @@
         <Button variant="error" @click="confirmDelete">삭제</Button>
       </template>
     </Modal>
+
+    <!-- 구독 요금제 팝업 -->
+    <SubscriptionPlansModal :visible="showSubscriptionModal" @close="showSubscriptionModal = false" />
   </AppLayout>
 </template>
 
@@ -84,17 +87,20 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobPostingStore } from '@/stores/jobPosting'
+import { storeToRefs } from 'pinia'
 import { inject } from 'vue'
+import { formatGenres } from '@/utils/formatters'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'
 import Badge from '@/components/common/Badge.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Modal from '@/components/common/Modal.vue'
+import SubscriptionPlansModal from '@/components/subscription/SubscriptionPlansModal.vue'
 
 const router = useRouter()
 const jobPostingStore = useJobPostingStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
 const tabs = [
   { value: '', label: '전체' },
@@ -106,8 +112,10 @@ const tabs = [
 const currentTab = ref('')
 const showDeleteModal = ref(false)
 const deleteTargetId = ref(null)
+const showSubscriptionModal = ref(false)
 
-const { myPostings, loading } = jobPostingStore
+// storeToRefs를 사용하여 반응성 유지
+const { myPostings, loading } = storeToRefs(jobPostingStore)
 
 const fetchPostings = async () => {
   const params = {}
@@ -116,8 +124,17 @@ const fetchPostings = async () => {
   }
   const result = await jobPostingStore.fetchMyPostings(params)
   if (!result.success) {
+    if (showToast && typeof showToast === 'function') {
     showToast('공고를 불러오는데 실패했습니다', 'error')
+    }
   }
+}
+
+const viewPostingApplicants = (id) => {
+  router.push({
+    path: '/academy/applications',
+    query: { job_posting: id }
+  })
 }
 
 const handleEdit = (id) => {
@@ -128,10 +145,14 @@ const handleClose = async (id) => {
   if (confirm('공고를 마감하시겠습니까?')) {
     const result = await jobPostingStore.closePosting(id)
     if (result.success) {
+      if (showToast && typeof showToast === 'function') {
       showToast('공고가 마감되었습니다', 'success')
+      }
       await fetchPostings()
     } else {
+      if (showToast && typeof showToast === 'function') {
       showToast(result.error || '공고 마감에 실패했습니다', 'error')
+      }
     }
   }
 }
@@ -144,11 +165,15 @@ const handleDelete = (id) => {
 const confirmDelete = async () => {
   const result = await jobPostingStore.deletePosting(deleteTargetId.value)
   if (result.success) {
+    if (showToast && typeof showToast === 'function') {
     showToast('공고가 삭제되었습니다', 'success')
+    }
     showDeleteModal.value = false
     await fetchPostings()
   } else {
+    if (showToast && typeof showToast === 'function') {
     showToast(result.error || '공고 삭제에 실패했습니다', 'error')
+    }
   }
 }
 
@@ -193,6 +218,15 @@ watch(currentTab, () => {
 
 onMounted(() => {
   fetchPostings()
+  
+  // 로그인 후 첫 방문 시 구독 팝업 표시
+  const hasSeenModal = localStorage.getItem('subscription_modal_seen')
+  if (!hasSeenModal) {
+    // 약간의 지연 후 팝업 표시 (페이지 로드 후)
+    setTimeout(() => {
+      showSubscriptionModal.value = true
+    }, 1000)
+  }
 })
 </script>
 

@@ -108,6 +108,16 @@ body {
   padding: var(--spacing-sm);
 }
 
+.btn-error {
+  background-color: var(--color-error);
+  color: white;
+}
+
+.btn-error:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
 /* 입력 필드 */
 .input-field {
   width: 100%;
@@ -166,6 +176,11 @@ body {
 .badge-info {
   background-color: var(--color-info);
   color: var(--color-text-primary);
+}
+
+.badge-disabled {
+  background-color: var(--color-disabled);
+  color: var(--color-text-secondary);
 }
 
 /* 로딩 */

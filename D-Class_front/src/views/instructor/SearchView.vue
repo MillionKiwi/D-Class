@@ -86,7 +86,7 @@
             <h4 class="result-title">{{ posting.title }}</h4>
             <div class="result-info">
               <span class="result-academy">{{ posting.academy.name }}</span>
-              <span class="result-genres">{{ posting.genres.join(', ') }}</span>
+              <span class="result-genres">{{ formatGenres(posting.genres) }}</span>
               <span class="result-salary">{{ formatSalary(posting) }}</span>
             </div>
           </Card>
@@ -109,6 +109,7 @@ import { useJobPostingStore } from '@/stores/jobPosting'
 import apiClient from '@/services/api'
 import { API_ENDPOINTS } from '@/config/api'
 import { inject } from 'vue'
+import { formatGenres } from '@/utils/formatters'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'

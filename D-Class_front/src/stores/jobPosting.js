@@ -19,7 +19,13 @@ export const useJobPostingStore = defineStore('jobPosting', () => {
     loading.value = true
     try {
       const response = await apiClient.get(API_ENDPOINTS.JOB_POSTINGS.LIST, { params })
-      postings.value = response.data.results
+      // 페이지가 1이면 기존 목록을 교체, 아니면 추가
+      const page = params.page || 1
+      if (page === 1) {
+        postings.value = response.data.results
+      } else {
+        postings.value = [...postings.value, ...response.data.results]
+      }
       pagination.value = {
         count: response.data.count,
         next: response.data.next,
@@ -54,9 +60,28 @@ export const useJobPostingStore = defineStore('jobPosting', () => {
       const response = await apiClient.post(API_ENDPOINTS.JOB_POSTINGS.LIST, formData)
       return { success: true, data: response.data }
     } catch (error) {
+      // 백엔드 응답에서 에러 메시지 추출
+      let errorMessage = '공고 등록에 실패했습니다'
+      
+      if (error.response?.data) {
+        const errorData = error.response.data
+        if (errorData.detail) {
+          errorMessage = typeof errorData.detail === 'string' 
+            ? errorData.detail 
+            : JSON.stringify(errorData.detail)
+        } else if (errorData.message) {
+          errorMessage = errorData.message
+        } else if (typeof errorData === 'string') {
+          errorMessage = errorData
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       return {
         success: false,
-        error: error.response?.data || '공고 등록에 실패했습니다',
+        error: errorMessage,
+        status: error.response?.status,
       }
     } finally {
       loading.value = false
@@ -73,9 +98,28 @@ export const useJobPostingStore = defineStore('jobPosting', () => {
       )
       return { success: true, data: response.data }
     } catch (error) {
+      // 백엔드 응답에서 에러 메시지 추출
+      let errorMessage = '공고 수정에 실패했습니다'
+      
+      if (error.response?.data) {
+        const errorData = error.response.data
+        if (errorData.detail) {
+          errorMessage = typeof errorData.detail === 'string' 
+            ? errorData.detail 
+            : JSON.stringify(errorData.detail)
+        } else if (errorData.message) {
+          errorMessage = errorData.message
+        } else if (typeof errorData === 'string') {
+          errorMessage = errorData
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       return {
         success: false,
-        error: error.response?.data || '공고 수정에 실패했습니다',
+        error: errorMessage,
+        status: error.response?.status,
       }
     } finally {
       loading.value = false
@@ -141,7 +185,19 @@ export const useJobPostingStore = defineStore('jobPosting', () => {
       })
       return { success: true, is_favorited: response.data.is_favorited }
     } catch (error) {
-      return { success: false, error }
+      // 401 에러는 토큰 갱신 후 재시도되므로, 여기서는 다른 에러만 처리
+      if (error.response?.status === 401) {
+        // 토큰 갱신 후 재시도는 인터셉터에서 처리되므로, 여기서는 에러 반환
+        return { 
+          success: false, 
+          error: '인증이 필요합니다. 다시 시도해주세요.',
+          status: 401
+        }
+      }
+      return { 
+        success: false, 
+        error: error.response?.data?.detail || '찜하기 처리 중 오류가 발생했습니다'
+      }
     }
   }
 

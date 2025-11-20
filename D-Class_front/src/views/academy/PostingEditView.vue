@@ -123,6 +123,29 @@
           <Button type="submit" :loading="saving" full-width>등록하기</Button>
         </div>
       </form>
+
+      <!-- 인증 필요 안내 모달 -->
+      <Modal :visible="showVerificationModal" title="인증 필요" @close="showVerificationModal = false">
+        <div class="verification-notice">
+          <p><strong>공고를 등록하려면 인증이 필요합니다.</strong></p>
+          <p class="verification-message">
+            사업자 인증을 완료하신 후 공고를 등록하실 수 있습니다.
+          </p>
+          <div v-if="user?.verification_status === 'pending'" class="verification-status">
+            <p>현재 인증 대기 중입니다. 검토까지 1-2일 소요됩니다.</p>
+          </div>
+          <div v-else-if="user?.verification_status === 'rejected'" class="verification-status">
+            <p>인증이 반려되었습니다. 인증 페이지에서 재신청해주세요.</p>
+          </div>
+          <div v-else class="verification-status">
+            <p>인증을 신청해주세요.</p>
+          </div>
+        </div>
+        <template #footer>
+          <Button variant="secondary" @click="showVerificationModal = false">닫기</Button>
+          <Button @click="goToVerification">인증 페이지로 이동</Button>
+        </template>
+      </Modal>
     </div>
   </AppLayout>
 </template>
@@ -131,15 +154,21 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useJobPostingStore } from '@/stores/jobPosting'
+import { useAuthStore } from '@/stores/auth'
 import { inject } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Input from '@/components/common/Input.vue'
 import Button from '@/components/common/Button.vue'
+import Modal from '@/components/common/Modal.vue'
 
 const router = useRouter()
 const route = useRoute()
 const jobPostingStore = useJobPostingStore()
-const showToast = inject('toast')
+const authStore = useAuthStore()
+const showToast = inject('toast', () => {})
+
+const user = computed(() => authStore.user)
+const showVerificationModal = ref(false)
 
 const isEdit = computed(() => !!route.params.id)
 
@@ -278,8 +307,18 @@ const validateForm = () => {
 
 const handleSave = async () => {
   if (!validateForm()) {
+    if (showToast && typeof showToast === 'function') {
     showToast('필수 항목을 모두 입력해주세요', 'error')
+    }
     return
+  }
+
+  // 새 공고 등록 시 인증 상태 체크
+  if (!isEdit.value) {
+    if (!user.value || user.value.verification_status !== 'approved') {
+      showVerificationModal.value = true
+      return
+    }
   }
 
   saving.value = true
@@ -292,19 +331,35 @@ const handleSave = async () => {
     }
 
     if (result.success) {
+      if (showToast && typeof showToast === 'function') {
       showToast(
         isEdit.value ? '공고가 수정되었습니다' : '관리자 검토 후 공고가 게시됩니다',
         'success'
       )
+      }
       router.push('/academy/postings')
     } else {
+      // 403 에러인 경우 인증 필요 메시지 표시
+      if (result.status === 403) {
+        showVerificationModal.value = true
+      } else {
+        if (showToast && typeof showToast === 'function') {
       showToast(result.error || '공고 등록에 실패했습니다', 'error')
+        }
+      }
     }
   } catch (error) {
+    if (showToast && typeof showToast === 'function') {
     showToast('공고 등록에 실패했습니다', 'error')
+    }
   } finally {
     saving.value = false
   }
+}
+
+const goToVerification = () => {
+  showVerificationModal.value = false
+  router.push('/academy/verification')
 }
 
 const handleBack = () => {
@@ -313,9 +368,14 @@ const handleBack = () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  // 사용자 정보가 없으면 로드
+  if (!user.value) {
+    await authStore.fetchCurrentUser()
+  }
+  
   if (isEdit.value) {
-    fetchPosting()
+    await fetchPosting()
   }
 })
 </script>
@@ -421,5 +481,38 @@ onMounted(() => {
 
 .form-actions {
   margin-top: var(--spacing-3xl);
+}
+
+.verification-notice {
+  padding: var(--spacing-md);
+}
+
+.verification-notice p {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 16px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
+.verification-notice strong {
+  color: var(--color-error);
+}
+
+.verification-message {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.verification-status {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-background);
+  border-radius: var(--radius-sm);
+}
+
+.verification-status p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 </style>

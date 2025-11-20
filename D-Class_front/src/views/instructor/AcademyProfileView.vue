@@ -67,7 +67,7 @@
             @click="$router.push(`/job-postings/${posting.id}`)"
           >
             <h4>{{ posting.title }}</h4>
-            <p class="posting-genres">{{ posting.genres.join(', ') }}</p>
+            <p class="posting-genres">{{ formatGenres(posting.genres) }}</p>
             <p class="posting-salary">{{ formatSalary(posting) }}</p>
           </Card>
         </div>
@@ -117,6 +117,7 @@ import apiClient from '@/services/api'
 import { API_ENDPOINTS } from '@/config/api'
 import { useReviewStore } from '@/stores/review'
 import { inject } from 'vue'
+import { formatGenres, getGenreLabel } from '@/utils/formatters'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'
@@ -132,16 +133,6 @@ const academyId = computed(() => route.params.id)
 const academy = ref(null)
 const reviews = ref([])
 const loading = ref(false)
-
-const genreLabels = {
-  ballet: '발레',
-  contemporary: '현대무용',
-  korean: '한국무용',
-  jazz: '재즈댄스',
-  hiphop: '힙합',
-  ballroom: '볼룸댄스',
-  etc: '기타',
-}
 
 const facilityLabels = {
   parking: '주차 가능',
@@ -162,7 +153,14 @@ const fetchAcademy = async () => {
       page_size: 3,
     })
     if (reviewResult.success) {
+      // API 응답 구조: { count, next, previous, results: { academy, rating_distribution, count, results: [...] } }
+      if (reviewResult.data.results && typeof reviewResult.data.results === 'object' && !Array.isArray(reviewResult.data.results)) {
+        // Pagination이 적용된 경우
+        reviews.value = reviewResult.data.results.results || []
+      } else {
+        // Pagination이 적용되지 않은 경우
       reviews.value = reviewResult.data.results || []
+      }
     }
   } catch (error) {
     showToast('학원 정보를 불러오는데 실패했습니다', 'error')
@@ -184,10 +182,6 @@ const viewLocation = () => {
     const url = `https://map.kakao.com/link/search/${encodeURIComponent(academy.value.address)}`
     window.open(url, '_blank')
   }
-}
-
-const getGenreLabel = (value) => {
-  return genreLabels[value] || value
 }
 
 const getFacilityLabel = (value) => {

@@ -41,9 +41,39 @@ export const useApplicationStore = defineStore('application', () => {
       })
       return { success: true, data: response.data }
     } catch (error) {
+      // 백엔드 응답에서 에러 메시지 추출
+      let errorMessage = '지원에 실패했습니다'
+      
+      if (error.response?.data) {
+        const errorData = error.response.data
+        // detail 필드가 있으면 사용
+        if (errorData.detail) {
+          errorMessage = typeof errorData.detail === 'string' 
+            ? errorData.detail 
+            : JSON.stringify(errorData.detail)
+        }
+        // message 필드가 있으면 사용
+        else if (errorData.message) {
+          errorMessage = errorData.message
+        }
+        // 객체 형태의 에러인 경우
+        else if (typeof errorData === 'object') {
+          // 첫 번째 에러 메시지를 찾음
+          const firstError = Object.values(errorData)[0]
+          if (Array.isArray(firstError) && firstError.length > 0) {
+            errorMessage = firstError[0]
+          } else if (typeof firstError === 'string') {
+            errorMessage = firstError
+          }
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       return {
         success: false,
-        error: error.response?.data?.detail || '지원에 실패했습니다',
+        error: errorMessage,
+        status: error.response?.status,
       }
     } finally {
       loading.value = false
@@ -117,6 +147,41 @@ export const useApplicationStore = defineStore('application', () => {
     }
   }
 
+  // 지원 취소
+  const cancelApplication = async (id) => {
+    loading.value = true
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.APPLICATIONS.CANCEL(id))
+      // 취소된 지원을 목록에서 제거
+      applications.value = applications.value.filter((app) => app.id !== id)
+      return { success: true, data: response.data }
+    } catch (error) {
+      // 백엔드 응답에서 에러 메시지 추출
+      let errorMessage = '지원 취소에 실패했습니다'
+      
+      if (error.response?.data) {
+        const errorData = error.response.data
+        if (errorData.detail) {
+          errorMessage = typeof errorData.detail === 'string' 
+            ? errorData.detail 
+            : JSON.stringify(errorData.detail)
+        } else if (errorData.message) {
+          errorMessage = errorData.message
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      return {
+        success: false,
+        error: errorMessage,
+        status: error.response?.status,
+      }
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     applications,
     currentApplication,
@@ -128,5 +193,6 @@ export const useApplicationStore = defineStore('application', () => {
     fetchApplicationDetail,
     acceptApplication,
     rejectApplication,
+    cancelApplication,
   }
 })

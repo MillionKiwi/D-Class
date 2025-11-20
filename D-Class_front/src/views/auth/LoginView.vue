@@ -3,7 +3,7 @@
     <div class="login-page">
       <div class="login-container">
         <div class="login-header">
-          <h1 class="logo">D-Class</h1>
+          <h1 class="logo">D-Match</h1>
           <p class="subtitle">무용 강사와 학원을 연결하는 플랫폼</p>
         </div>
 
@@ -84,15 +84,39 @@ const handleLogin = async () => {
   const result = await authStore.login(form.email, form.password)
 
   if (result.success) {
-    showToast('로그인되었습니다', 'success')
-    const redirect = route.query.redirect || (result.user.role === 'academy' ? '/academy/postings' : '/home')
-    router.push(redirect)
+    if (showToast) {
+      showToast('로그인되었습니다', 'success')
+    }
+    
+    // 사용자 정보 확인
+    const user = result.user || authStore.user
+    if (!user) {
+      console.error('[LoginView] User data not found after login')
+      if (showToast) {
+        showToast('로그인 정보를 불러오는데 실패했습니다', 'error')
+      }
+      return
+    }
+    
+    // 리다이렉트 경로 결정
+    const redirect = route.query.redirect || (user.role === 'academy' ? '/academy/postings' : '/home')
+    
+    // 약간의 지연 후 리다이렉트 (토스트 메시지가 보이도록)
+    setTimeout(() => {
+      router.push(redirect).catch((err) => {
+        console.error('[LoginView] Router push error:', err)
+      })
+    }, 100)
   } else {
-    showToast(result.error || '로그인에 실패했습니다', 'error')
-    if (result.error.includes('이메일')) {
-      errors.email = result.error
-    } else if (result.error.includes('비밀번호')) {
-      errors.password = result.error
+    if (showToast) {
+      showToast(result.error || '로그인에 실패했습니다', 'error')
+    }
+    if (result.error && typeof result.error === 'string') {
+      if (result.error.includes('이메일')) {
+        errors.email = result.error
+      } else if (result.error.includes('비밀번호')) {
+        errors.password = result.error
+      }
     }
   }
 }

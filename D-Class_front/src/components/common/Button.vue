@@ -14,7 +14,7 @@ defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'secondary', 'text'].includes(value),
+    validator: (value) => ['primary', 'secondary', 'text', 'error'].includes(value),
   },
   disabled: {
     type: Boolean,

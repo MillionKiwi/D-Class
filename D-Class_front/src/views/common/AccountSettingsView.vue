@@ -85,7 +85,7 @@ const handleWithdraw = async () => {
 
   withdrawing.value = true
   try {
-    await apiClient.delete(API_ENDPOINTS.USERS.ME, {
+    await apiClient.delete(API_ENDPOINTS.USERS.DELETE, {
       data: { password: withdrawPassword.value },
     })
     showToast('회원 탈퇴가 완료되었습니다', 'success')

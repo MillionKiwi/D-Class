@@ -151,7 +151,8 @@ class JobPostingMySerializer(serializers.ModelSerializer):
     class Meta:
         model = JobPosting
         fields = [
-            'id', 'title', 'status', 'application_count', 'created_at'
+            'id', 'title', 'status', 'genres', 'salary', 'salary_type',
+            'application_count', 'created_at'
         ]
     
     def get_application_count(self, obj):

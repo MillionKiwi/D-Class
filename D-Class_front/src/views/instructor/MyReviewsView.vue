@@ -63,6 +63,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useReviewStore } from '@/stores/review'
+import { storeToRefs } from 'pinia'
 import { inject } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
@@ -73,9 +74,10 @@ import Modal from '@/components/common/Modal.vue'
 
 const router = useRouter()
 const reviewStore = useReviewStore()
-const showToast = inject('toast')
+const showToast = inject('toast', () => {})
 
-const { reviews, loading } = reviewStore
+// storeToRefs를 사용하여 반응성 유지
+const { reviews, loading } = storeToRefs(reviewStore)
 const showDeleteModal = ref(false)
 const deleteTargetId = ref(null)
 
@@ -98,11 +100,17 @@ const handleDelete = (review) => {
 const confirmDelete = async () => {
   const result = await reviewStore.deleteReview(deleteTargetId.value)
   if (result.success) {
+    if (showToast && typeof showToast === 'function') {
     showToast('리뷰가 삭제되었습니다', 'success')
+    }
     showDeleteModal.value = false
     await fetchReviews()
   } else {
+    if (showToast && typeof showToast === 'function') {
     showToast(result.error || '리뷰 삭제에 실패했습니다', 'error')
+    } else {
+      console.error('리뷰 삭제 실패:', result.error)
+    }
   }
 }
 

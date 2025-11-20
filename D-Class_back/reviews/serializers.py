@@ -53,10 +53,12 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     """리뷰 시리얼라이저"""
     author = serializers.SerializerMethodField()
+    academy = serializers.SerializerMethodField()
+    instructor = serializers.SerializerMethodField()
     
     class Meta:
         model = Review
-        fields = ['id', 'author', 'rating', 'content', 'created_at']
+        fields = ['id', 'author', 'academy', 'instructor', 'rating', 'content', 'created_at']
     
     def get_author(self, obj):
         # 익명 처리
@@ -64,6 +66,24 @@ class ReviewSerializer(serializers.ModelSerializer):
         if len(name) > 2:
             return name[0] + '*' * (len(name) - 2) + name[-1]
         return name[0] + '*'
+    
+    def get_academy(self, obj):
+        if obj.academy:
+            return {
+                'id': obj.academy.id,
+                'name': obj.academy.academy_profile.academy_name if hasattr(obj.academy, 'academy_profile') else obj.academy.name,
+                'is_verified': obj.academy.is_verified
+            }
+        return None
+    
+    def get_instructor(self, obj):
+        if obj.instructor:
+            return {
+                'id': obj.instructor.id,
+                'name': obj.instructor.name,
+                'is_verified': obj.instructor.is_verified
+            }
+        return None
 
 
 class ReviewListSerializer(serializers.Serializer):

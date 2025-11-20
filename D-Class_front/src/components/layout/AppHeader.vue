@@ -2,7 +2,7 @@
   <header class="app-header">
     <div class="header-content">
       <router-link to="/" class="header-logo">
-        <h1>D-Class</h1>
+        <h1>D-Match</h1>
       </router-link>
       <div class="header-actions">
         <button v-if="showSearch" class="header-icon-btn" @click="$emit('search')">

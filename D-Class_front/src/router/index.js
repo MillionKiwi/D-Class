@@ -155,6 +155,12 @@ const router = createRouter({
       meta: { requiresAuth: true, role: ['academy'] },
     },
     {
+      path: '/academy/postings/:id',
+      name: 'AcademyPostingDetail',
+      component: () => import('@/views/instructor/JobPostingDetailView.vue'),
+      meta: { requiresAuth: true, role: ['academy'] },
+    },
+    {
       path: '/academy/postings/:id/edit',
       name: 'AcademyPostingEdit',
       component: () => import('@/views/academy/PostingEditView.vue'),
@@ -234,6 +240,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/subscription',
+      name: 'Subscription',
+      component: () => import('@/views/common/SubscriptionView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/settings/password',
       name: 'PasswordChange',
       component: () => import('@/views/common/PasswordChangeView.vue'),
@@ -255,8 +267,9 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // 초기화 (토큰 확인)
-  if (!authStore.user) {
+  // 초기화 (토큰이 있지만 사용자 정보가 없는 경우에만)
+  const token = localStorage.getItem('access_token')
+  if (token && !authStore.user && !authStore.isAuthenticated) {
     await authStore.init()
   }
 

@@ -24,10 +24,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return ReviewSerializer
     
     def get_queryset(self):
-        return Review.objects.filter(author=self.request.user)
+        return Review.objects.filter(
+            author=self.request.user
+        ).select_related('academy', 'instructor', 'academy__academy_profile')
     
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        # serializer의 create 메서드에서 이미 author를 설정하므로 여기서는 save만 호출
+        serializer.save()
     
     def perform_update(self, serializer):
         if serializer.instance.author != self.request.user:
@@ -161,4 +164,6 @@ class MyReviewsView(generics.ListAPIView):
     serializer_class = ReviewSerializer
     
     def get_queryset(self):
-        return Review.objects.filter(author=self.request.user).order_by('-created_at')
+        return Review.objects.filter(
+            author=self.request.user
+        ).select_related('academy', 'instructor', 'academy__academy_profile').order_by('-created_at')

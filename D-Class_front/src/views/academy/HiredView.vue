@@ -25,7 +25,7 @@
                 {{ instructor.name }}
                 <Badge v-if="instructor.is_verified" variant="success" small>✓</Badge>
               </h3>
-              <p class="instructor-specialties">{{ instructor.specialties?.join(', ') || '-' }}</p>
+              <p class="instructor-specialties">{{ formatGenres(instructor.specialties) || '-' }}</p>
             </div>
           </div>
 
@@ -65,6 +65,7 @@ import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'
 import Badge from '@/components/common/Badge.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { formatGenres } from '@/utils/formatters'
 
 const router = useRouter()
 const showToast = inject('toast')

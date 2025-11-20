@@ -29,14 +29,43 @@ class ApplicationListSerializer(serializers.ModelSerializer):
     """지원 목록 시리얼라이저 (강사용)"""
     job_posting = JobPostingListSerializer(read_only=True)
     can_review = serializers.SerializerMethodField()
+    review_id = serializers.SerializerMethodField()
     
     class Meta:
         model = Application
-        fields = ['id', 'job_posting', 'status', 'created_at', 'can_review']
+        fields = ['id', 'job_posting', 'status', 'created_at', 'can_review', 'review_id']
     
     def get_can_review(self, obj):
         # 채용 확정된 경우에만 리뷰 작성 가능
-        return obj.status == 'accepted' and not obj.reviews.exists()
+        # 강사가 이미 리뷰를 작성했는지 확인
+        from reviews.models import Review
+        user = self.context['request'].user
+        if obj.status != 'accepted':
+            return False
+        
+        # 강사가 해당 학원에 대해 이미 리뷰를 작성했는지 확인
+        has_reviewed = Review.objects.filter(
+            author=user,
+            academy=obj.job_posting.academy,
+            application=obj
+        ).exists()
+        
+        return not has_reviewed
+    
+    def get_review_id(self, obj):
+        # 이미 작성된 리뷰의 ID 반환
+        from reviews.models import Review
+        user = self.context['request'].user
+        if obj.status != 'accepted':
+            return None
+        
+        review = Review.objects.filter(
+            author=user,
+            academy=obj.job_posting.academy,
+            application=obj
+        ).first()
+        
+        return review.id if review else None
 
 
 class ApplicationInstructorSerializer(serializers.ModelSerializer):
@@ -82,21 +111,20 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
     """지원 상세 시리얼라이저 (학원용)"""
     instructor = serializers.SerializerMethodField()
     job_posting = serializers.SerializerMethodField()
+    can_review = serializers.SerializerMethodField()
+    review_id = serializers.SerializerMethodField()
     
     class Meta:
         model = Application
-        fields = ['id', 'instructor', 'job_posting', 'status', 'created_at']
+        fields = ['id', 'instructor', 'job_posting', 'status', 'created_at', 'can_review', 'review_id']
     
     def get_instructor(self, obj):
         if hasattr(obj.instructor, 'instructor_profile'):
             profile = obj.instructor.instructor_profile
             from instructors.serializers import ExperienceSerializer, EducationSerializer
             
-            # 연락처 마스킹 (채용 확정 전)
+            # 학원이 지원자를 조회할 때는 항상 전화번호를 볼 수 있도록 함
             phone = obj.instructor.phone
-            if obj.status != 'accepted' and not profile.contact_visible:
-                if phone and len(phone) > 4:
-                    phone = phone[:3] + '****' + phone[-4:]
             
             return {
                 'id': obj.instructor.id,
@@ -106,7 +134,7 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
                 'specialties': profile.specialties,
                 'bio': profile.bio,
                 'phone': phone,
-                'contact_visible': profile.contact_visible or obj.status == 'accepted',
+                'contact_visible': True,  # 학원이 조회할 때는 항상 연락 가능
                 'experiences': ExperienceSerializer(profile.experiences.all(), many=True).data,
                 'educations': EducationSerializer(profile.educations.all(), many=True).data,
                 'average_rating': self._get_average_rating(obj.instructor),
@@ -123,6 +151,40 @@ class ApplicationDetailSerializer(serializers.ModelSerializer):
             'id': obj.job_posting.id,
             'title': obj.job_posting.title
         }
+    
+    def get_can_review(self, obj):
+        """학원이 강사에 대한 리뷰를 작성할 수 있는지 확인"""
+        from reviews.models import Review
+        user = self.context['request'].user
+        
+        # 채용 확정된 경우에만 리뷰 작성 가능
+        if obj.status != 'accepted':
+            return False
+        
+        # 학원이 해당 강사에 대해 이미 리뷰를 작성했는지 확인
+        has_reviewed = Review.objects.filter(
+            author=user,
+            instructor=obj.instructor,
+            application=obj
+        ).exists()
+        
+        return not has_reviewed
+    
+    def get_review_id(self, obj):
+        """이미 작성된 리뷰의 ID 반환"""
+        from reviews.models import Review
+        user = self.context['request'].user
+        
+        if obj.status != 'accepted':
+            return None
+        
+        review = Review.objects.filter(
+            author=user,
+            instructor=obj.instructor,
+            application=obj
+        ).first()
+        
+        return review.id if review else None
     
     def _get_average_rating(self, instructor):
         from reviews.models import Review

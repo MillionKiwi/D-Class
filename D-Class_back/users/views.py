@@ -108,7 +108,7 @@ class LoginView(generics.GenericAPIView):
         return Response({
             'access': str(refresh.access_token),
             'refresh': str(refresh),
-            'user': UserSerializer(user).data
+            'user': UserSerializer(user, context={'request': request}).data
         })
 
 
@@ -166,7 +166,7 @@ class PasswordResetView(generics.GenericAPIView):
             print(f"비밀번호 재설정 링크: {reset_url}")
         else:
             send_mail(
-                subject='D-Class 비밀번호 재설정',
+                subject='D-Match 비밀번호 재설정',
                 message=f'비밀번호를 재설정하려면 다음 링크를 클릭하세요: {reset_url}',
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[email],

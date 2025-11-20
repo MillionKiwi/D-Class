@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
     PROFILE: '/users/me/profile/',
     ACADEMY: '/users/me/academy/',
     PASSWORD_CHANGE: '/users/me/password/change/',
+    DELETE: '/users/me/delete/',
   },
   // 강사 프로필
   INSTRUCTORS: {
@@ -46,10 +47,12 @@ export const API_ENDPOINTS = {
     DETAIL: (id) => `/applications/${id}/`,
     ACCEPT: (id) => `/applications/${id}/accept/`,
     REJECT: (id) => `/applications/${id}/reject/`,
+    CANCEL: (id) => `/applications/${id}/cancel/`,
   },
   // 리뷰
   REVIEWS: {
     CREATE: '/reviews/',
+    DETAIL: (id) => `/reviews/${id}/`,
     UPDATE: (id) => `/reviews/${id}/`,
     DELETE: (id) => `/reviews/${id}/`,
     MY: '/reviews/my/',

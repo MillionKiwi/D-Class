@@ -14,8 +14,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'D-Class',
-        short_name: 'D-Class',
+        name: 'D-Match',
+        short_name: 'D-Match',
         description: '무용 강사와 학원을 연결하는 플랫폼',
         theme_color: '#A7C7E7',
         background_color: '#F9F9F9',

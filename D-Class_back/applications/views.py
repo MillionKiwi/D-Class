@@ -51,10 +51,19 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         else:
             return ApplicationInstructorSerializer
     
+    def get_serializer_context(self):
+        """Serializer context에 request 추가"""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+    
     def perform_create(self, serializer):
-        if self.request.user.role != 'instructor':
+        user = self.request.user
+        if user.role != 'instructor':
             raise PermissionDenied('강사만 지원할 수 있습니다')
-        application = serializer.save(instructor=self.request.user, status='pending')
+        if user.verification_status != 'approved':
+            raise PermissionDenied('인증이 완료된 강사만 지원할 수 있습니다')
+        application = serializer.save(instructor=user, status='pending')
         
         # 학원에게 알림 발송
         Notification.objects.create(
@@ -128,6 +137,49 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             'message': '불합격 처리되었습니다',
             'status': 'rejected'
         })
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def cancel(self, request, pk=None):
+        """지원 취소 (강사만 가능)"""
+        application = self.get_object()
+        
+        # 강사만 자신의 지원을 취소할 수 있음
+        if request.user.role != 'instructor' or application.instructor != request.user:
+            return Response(
+                {'detail': '권한이 없습니다'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # 채용 확정된 지원은 취소할 수 없음
+        if application.status == 'accepted':
+            return Response(
+                {'detail': '채용 확정된 지원은 취소할 수 없습니다'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # 알림 발송을 위해 필요한 정보 저장
+        application_id = application.id
+        academy = application.job_posting.academy
+        job_posting_title = application.job_posting.title
+        job_posting_id = application.job_posting.id
+        instructor_name = application.instructor.name
+        
+        # 지원 삭제
+        application.delete()
+        
+        # 학원에게 알림 발송
+        Notification.objects.create(
+            user=academy,
+            type='application_cancelled',
+            title='지원 취소 알림',
+            content=f'{instructor_name}님이 "{job_posting_title}" 공고 지원을 취소하셨습니다',
+            related_url=f'/job-postings/{job_posting_id}/'
+        )
+        
+        return Response({
+            'message': '지원이 취소되었습니다',
+            'application_id': application_id
+        }, status=status.HTTP_200_OK)
 
 
 class MyApplicationsView(generics.ListAPIView):
@@ -140,6 +192,12 @@ class MyApplicationsView(generics.ListAPIView):
             return Application.objects.none()
         return Application.objects.filter(
             instructor=self.request.user
-        ).select_related('job_posting').prefetch_related(
+        ).select_related('job_posting', 'job_posting__academy').prefetch_related(
             'job_posting__academy__academy_profile'
         )
+    
+    def get_serializer_context(self):
+        """Serializer context에 request 추가"""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context

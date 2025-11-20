@@ -28,11 +28,15 @@
         <div class="profile-info">
           <div class="info-item">
             <span class="info-label">전문 분야</span>
-            <span class="info-value">{{ application.instructor.specialties?.join(', ') || '-' }}</span>
+            <span class="info-value">{{ formatGenres(application.instructor.specialties) || '-' }}</span>
           </div>
           <div class="info-item">
             <span class="info-label">평균 평점</span>
             <span class="info-value">⭐ {{ application.instructor.average_rating || 'N/A' }}</span>
+          </div>
+          <div v-if="application.instructor.phone" class="info-item">
+            <span class="info-label">전화번호</span>
+            <span class="info-value">📞 {{ application.instructor.phone }}</span>
           </div>
         </div>
 
@@ -50,6 +54,7 @@
 
       <div class="action-section">
         <Button
+          v-if="application.status !== 'accepted'"
           variant="error"
           @click="handleReject"
           :disabled="application.status === 'rejected'"
@@ -57,10 +62,24 @@
           불합격 처리
         </Button>
         <Button
+          v-if="application.status !== 'accepted'"
           @click="handleAccept"
-          :disabled="application.status === 'accepted'"
         >
           채용 확정
+        </Button>
+        <Button
+          v-if="application.status === 'accepted' && application.can_review !== false"
+          variant="secondary"
+          @click="writeReview"
+        >
+          리뷰 작성하기
+        </Button>
+        <Button
+          v-if="application.status === 'accepted' && application.review_id"
+          variant="secondary"
+          @click="editReview"
+        >
+          리뷰 수정하기
         </Button>
       </div>
 
@@ -96,6 +115,7 @@ import Button from '@/components/common/Button.vue'
 import Badge from '@/components/common/Badge.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Modal from '@/components/common/Modal.vue'
+import { formatGenres } from '@/utils/formatters'
 
 const route = useRoute()
 const router = useRouter()
@@ -172,6 +192,24 @@ const viewInstructorProfile = () => {
     router.push({
       name: 'InstructorProfile',
       params: { id: application.value.instructor.id },
+    })
+  }
+}
+
+const writeReview = () => {
+  if (application.value?.id) {
+    router.push({
+      name: 'ReviewWrite',
+      params: { applicationId: application.value.id },
+    })
+  }
+}
+
+const editReview = () => {
+  if (application.value?.review_id) {
+    router.push({
+      name: 'ReviewEdit',
+      params: { id: application.value.review_id },
     })
   }
 }

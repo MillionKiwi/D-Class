@@ -10,7 +10,7 @@
               v-for="region in regions"
               :key="region.value"
               :class="['filter-chip', { selected: filters.region === region.value }]"
-              @click="filters.region = region.value"
+              @click="toggleRegion(region.value)"
             >
               {{ region.label }}
             </span>
@@ -85,7 +85,7 @@
               :class="['favorite-btn', { favorited: posting.is_favorited }]"
               @click.stop="toggleFavorite(posting.id)"
             >
-              ♡
+              {{ posting.is_favorited ? '❤️' : '♡' }}
             </button>
           </div>
 
@@ -95,7 +95,7 @@
             <span class="info-item">
               📍 {{ getRegionLabel(posting.region) }} / {{ posting.district }}
             </span>
-            <span class="info-item">🎭 {{ posting.genres.join(', ') }}</span>
+            <span class="info-item">🎭 {{ formatGenres(posting.genres) }}</span>
             <span class="info-item">💰 {{ formatSalary(posting) }}</span>
           </div>
 
@@ -161,7 +161,7 @@
               :class="['mini-card-favorite', { favorited: selectedPosting.is_favorited }]"
               @click.stop="toggleFavorite(selectedPosting.id)"
             >
-              ♡
+              {{ selectedPosting.is_favorited ? '❤️' : '♡' }}
             </button>
             <Button
               small
@@ -173,20 +173,25 @@
         </div>
       </div>
     </div>
+
+    <!-- 구독 요금제 팝업 -->
+    <SubscriptionPlansModal :visible="showSubscriptionModal" @close="showSubscriptionModal = false" />
   </AppLayout>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch, inject } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useJobPostingStore } from '@/stores/jobPosting'
 import { useNotificationStore } from '@/stores/notification'
-import { inject } from 'vue'
+import { formatGenres } from '@/utils/formatters'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'
 import Badge from '@/components/common/Badge.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import SubscriptionPlansModal from '@/components/subscription/SubscriptionPlansModal.vue'
 
 const notificationStore = useNotificationStore()
 const unreadCount = computed(() => notificationStore.unreadCount)
@@ -220,8 +225,13 @@ const filters = reactive({
 const ordering = ref('-created_at')
 const viewMode = ref('list') // 'list' | 'map'
 const selectedPosting = ref(null)
+const showSubscriptionModal = ref(false)
 
-const { postings, loading, pagination } = jobPostingStore
+// storeToRefs를 사용하여 반응성 유지하면서 구조 분해
+const { postings, loading, pagination } = storeToRefs(jobPostingStore)
+
+// Debounce를 위한 타이머
+let fetchDebounceTimer = null
 
 const fetchPostings = async () => {
   const params = {
@@ -239,17 +249,43 @@ const fetchPostings = async () => {
 
   const result = await jobPostingStore.fetchPostings(params)
   if (!result.success) {
+    if (showToast && typeof showToast === 'function') {
     showToast('공고를 불러오는데 실패했습니다', 'error')
+    }
   }
+}
+
+// Debounce가 적용된 필터 적용 함수
+const applyFilters = () => {
+  // 기존 타이머 취소
+  if (fetchDebounceTimer) {
+    clearTimeout(fetchDebounceTimer)
+  }
+
+  // 500ms 후에 API 요청 (사용자가 필터를 빠르게 변경할 때 마지막 변경만 적용)
+  fetchDebounceTimer = setTimeout(() => {
+    fetchPostings()
+  }, 500)
 }
 
 const loadMore = async () => {
   if (!pagination.next || loading.value) return
 
-  // 다음 페이지 로드
-  const result = await jobPostingStore.fetchPostings({
+  // 현재 필터와 정렬 조건 유지하면서 다음 페이지 로드
+  const params = {
+    ordering: ordering.value,
     page: getPageFromUrl(pagination.next),
-  })
+  }
+
+  if (filters.region) {
+    params.region = filters.region
+  }
+
+  if (filters.genres.length > 0) {
+    params.genre = filters.genres.join(',')
+  }
+
+  const result = await jobPostingStore.fetchPostings(params)
 
   if (result.success) {
     // postings는 이미 스토어에서 업데이트됨
@@ -259,6 +295,15 @@ const loadMore = async () => {
 const getPageFromUrl = (url) => {
   const match = url.match(/page=(\d+)/)
   return match ? parseInt(match[1]) : 1
+}
+
+const toggleRegion = (region) => {
+  // 같은 지역을 클릭하면 선택 해제, 다르면 선택
+  if (filters.region === region) {
+    filters.region = ''
+  } else {
+    filters.region = region
+  }
 }
 
 const toggleGenre = (genre) => {
@@ -273,14 +318,34 @@ const toggleGenre = (genre) => {
 const toggleFavorite = async (postingId) => {
   const result = await jobPostingStore.toggleFavorite(postingId)
   if (result.success) {
-    // 공고 목록 새로고침
-    await fetchPostings()
+    if (showToast && typeof showToast === 'function') {
+    showToast(
+      result.is_favorited ? '찜 목록에 추가되었습니다' : '찜 목록에서 제거되었습니다',
+      'success'
+    )
+    }
+    // 해당 공고의 is_favorited 상태 업데이트
+    const posting = postings.value.find((p) => p.id === postingId)
+    if (posting) {
+      posting.is_favorited = result.is_favorited
+    }
+    // 미니 카드도 업데이트
+    if (selectedPosting.value && selectedPosting.value.id === postingId) {
+      selectedPosting.value.is_favorited = result.is_favorited
+    }
+  } else {
+    if (showToast && typeof showToast === 'function') {
+    showToast('찜하기 처리 중 오류가 발생했습니다', 'error')
+    } else {
+      console.error('찜하기 처리 중 오류가 발생했습니다:', result.error)
+    }
   }
 }
 
 const resetFilters = () => {
   filters.region = ''
   filters.genres = []
+  // resetFilters는 즉시 적용
   fetchPostings()
 }
 
@@ -325,12 +390,37 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('ko-KR')
 }
 
-watch([filters, ordering], () => {
-  fetchPostings()
+// 필터와 정렬 조건 변경 감시 (debounce 적용)
+watch(
+  () => filters.region,
+  () => {
+    applyFilters()
+  }
+)
+
+watch(
+  () => filters.genres,
+  () => {
+    applyFilters()
+  },
+  { deep: true }
+)
+
+watch(ordering, () => {
+  applyFilters()
 })
 
 onMounted(async () => {
   await fetchPostings()
+  
+  // 로그인 후 첫 방문 시 구독 팝업 표시
+  const hasSeenModal = localStorage.getItem('subscription_modal_seen')
+  if (!hasSeenModal) {
+    // 약간의 지연 후 팝업 표시 (페이지 로드 후)
+    setTimeout(() => {
+      showSubscriptionModal.value = true
+    }, 1000)
+  }
   // 알림 카운트 로드
   await notificationStore.fetchNotifications({ page_size: 1 })
 })
@@ -495,7 +585,11 @@ onMounted(async () => {
   font-size: 24px;
   cursor: pointer;
   color: var(--color-text-secondary);
-  transition: color 0.2s;
+  transition: all 0.2s;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.1);
 }
 
 .favorite-btn.favorited {
@@ -619,8 +713,12 @@ onMounted(async () => {
   font-size: 24px;
   cursor: pointer;
   color: var(--color-text-secondary);
-  transition: color 0.2s;
+  transition: all 0.2s;
   padding: var(--spacing-xs);
+}
+
+.mini-card-favorite:hover {
+  transform: scale(1.1);
 }
 
 .mini-card-favorite.favorited {

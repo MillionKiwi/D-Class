@@ -96,6 +96,10 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('refresh_token')
       user.value = null
       isAuthenticated.value = false
+      // 로그인 페이지로 이동
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
     }
   }
 
