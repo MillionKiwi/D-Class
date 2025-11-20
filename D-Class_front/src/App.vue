@@ -1,11 +1,32 @@
-<script setup></script>
+<script setup>
+import { onMounted, ref, provide } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import Toast from '@/components/common/Toast.vue'
+
+const authStore = useAuthStore()
+const toastRef = ref(null)
+
+const showToast = (message, type = 'info', duration = 3000) => {
+  if (toastRef.value) {
+    toastRef.value.message = message
+    toastRef.value.type = type
+    toastRef.value.duration = duration
+    toastRef.value.show()
+  }
+}
+
+provide('toast', showToast)
+
+onMounted(async () => {
+  await authStore.init()
+})
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <RouterView />
+  <Toast ref="toastRef" />
 </template>
 
-<style scoped></style>
+<style>
+/* 전역 스타일은 main.css에 정의 */
+</style>
