@@ -1,0 +1,70 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+D-Class_back/.env
+D-Class_front/.env*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+ENV/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+.dev-dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite3
+db.sqlite3
+
+# Media and Static (프로덕션에서는 S3 사용)
+media/
+staticfiles/
+D-Class_back/media/
+D-Class_back/staticfiles/
+
+# Docker
+.dockerignore
+
